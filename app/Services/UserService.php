@@ -65,4 +65,13 @@ class UserService extends BaseService
 
         return $user;
     }
+
+    public function markPhoneNumberAsVerified($userId)
+    {
+        $user = $this->repository->findOrFail($userId);
+        $user->phone_number_verified_at = now();
+        $user->save();
+
+        return $user;
+    }
 }

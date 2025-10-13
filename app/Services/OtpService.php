@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Exception;
 use App\Models\User;
+use App\Events\OtpVerifed;
 
 class OtpService
 {
@@ -62,6 +63,7 @@ class OtpService
         }
 
         $this->userOtpService->markAsUsed($userOtp->id);
+        event(new OtpVerifed($userId));
         return true;
     }
 }
