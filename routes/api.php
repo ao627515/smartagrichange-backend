@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Resources\SuccessResponseResource;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\ParcelController;
@@ -18,10 +19,19 @@ Route::prefix('users')->group(function () {
 
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/me', [AuthController::class, 'me']);
+
+    Route::get('login', function () {
+        return new SuccessResponseResource('You are not logged in', null);
+    })->name('login');
+
+    Route::middleware('auth:api')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/refresh', [AuthController::class, 'refresh']);
+        Route::get('/me', [AuthController::class, 'me']);
+    });
 });
 
-Route::apiResource('fields', FieldController::class);
-Route::apiResource('parcels', ParcelController::class);
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('fields', FieldController::class);
+    Route::apiResource('parcels', ParcelController::class);
+});
