@@ -18,7 +18,8 @@ class UserRegisterService
 
         $this->userService->attachRole($user->id, UserRoleEnum::FARMER);
 
-        // event(new FarmerRegister($user->id));
+        event(new FarmerRegister($user->id));
+
         $tokenData = $this->authService->AuthFromUser($user->id);
 
         return $tokenData;
