@@ -28,7 +28,7 @@ class ErrorResponseResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'status' => 'success',
+            'status' => 'failed',
             'message' => $this->message,
             'errors' => $this->errors,
         ];

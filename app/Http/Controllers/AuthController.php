@@ -19,7 +19,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         try {
-            $credentials = $request->only(['email', 'password']);
+            $credentials = $request->only(['phone_number', 'password']);
             $tokenData = $this->authService->login($credentials);
             return new SuccessResponseResource('Login successful', new TokenResponse($tokenData));
         } catch (AuthenticationException $e) {
