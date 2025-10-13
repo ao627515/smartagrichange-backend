@@ -41,10 +41,10 @@ class SendOtp
         ]);
         $req->text = $req->getOtp($otp);
 
-        // $meta = $this->otpService->sendOtp($req);
+        $meta = $this->otpService->sendOtp($req);
 
-        // $meta = $meta ? json_encode($meta->toArray()) : null;
-        $meta = null;
+        $meta = $meta ? json_encode($meta->toArray()) : null;
+        // $meta = null;
 
 
         $this->userOtpService->create([
