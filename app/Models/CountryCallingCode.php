@@ -9,4 +9,6 @@ class CountryCallingCode extends Model
 {
     /** @use HasFactory<\Database\Factories\CountryCallingCodeFactory> */
     use HasFactory;
+
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 }

@@ -19,4 +19,9 @@ class AquilasSendSmsRequestDto extends Data
             $this->text = config('otp.message_template');
         }
     }
+
+    public function getOtp($otp): string
+    {
+        return str_replace('{otp}', $otp, $this->text);
+    }
 }

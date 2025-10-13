@@ -31,8 +31,10 @@ class AqilasService
     {
         $response = Http::withHeaders([
             'X-AUTH-TOKEN' => $this->apiKey,
-            'Accept'       => 'application/json',
-        ])->post($this->baseUrl . 'sms', $data->toArray());
+        ])
+            ->throw()
+            ->post($this->baseUrl . 'sms', $data->toArray());
+
 
         if ($response->successful()) {
             return new AquilasSendSmsSuccessResponseDto(

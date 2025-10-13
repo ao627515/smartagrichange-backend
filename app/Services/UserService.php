@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTO\Requests\Aquilas\AquilasSendSmsRequestDto;
 use App\Enums\UserRoleEnum;
+use App\Events\FarmerRegister;
 use App\Services\OtpService;
 use App\Services\BaseService;
 use App\Repositories\RoleRepository;
@@ -46,22 +47,11 @@ class UserService extends BaseService
         }
 
         $user = $this->repository->create($data);
+
         $this->attachRole($user->id, UserRoleEnum::FARMER);
 
+        event(new FarmerRegister($user->id));
 
-        // create and send OTP
-        $otp = $this->otpService->generateOtp();
-
-        $meta = $this->otpService->sendOtp(AquilasSendSmsRequestDto::from([
-            'to' => [$data['calling_code'] . $data['phone_number']],
-        ]));
-
-
-        $this->userOtpService->create([
-            'user_id' => $user->id,
-            'otp' => $otp,
-            'meta' => json_encode($meta->toArray()),
-        ]);
         return $user;
     }
 

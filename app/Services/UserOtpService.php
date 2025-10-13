@@ -18,7 +18,7 @@ class UserOtpService extends BaseService
     public function create(array $data)
     {
         if (!isset($data['otp_expiry'])) {
-            $data['expires_at'] = now()->addMinutes(config('otp.otp_expiry'));
+            $data['expires_at'] = now()->addMinutes((int)config('otp.otp_expiry'));
         }
 
         if (!isset($data['max_attempts'])) {

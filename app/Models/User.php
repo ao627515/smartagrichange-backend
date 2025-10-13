@@ -59,7 +59,7 @@ class User extends Authenticatable
         return $this->roles()->where('name', $roleName)->exists();
     }
 
-    public function completPhoneNumber(): Attribute
+    public function fullPhoneNumber(): Attribute
     {
         return Attribute::make(
             get: fn() => $this->countryCallingCode ? $this->countryCallingCode->calling_code . $this->phone_number : $this->phone_number,
