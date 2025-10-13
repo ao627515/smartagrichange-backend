@@ -3,10 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Farmer\FarmerStoreRequest;
+use App\Http\Requests\User\UserStoreRequest;
+use App\Http\Resources\SuccessResponseResource;
+use App\Http\Resources\User\UserResource;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+
+    public function __construct(
+        private UserService $userService
+    ) {
+        //
+    }
     /**
      * Display a listing of the resource.
      */
@@ -26,9 +37,22 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $user = $this->userService->create($validated);
+
+        return new SuccessResponseResource('User created successfully', new UserResource($user));
+    }
+
+    public function storeFarmer(FarmerStoreRequest $request)
+    {
+        $validated = $request->validated();
+
+        $user = $this->userService->createFarmer($validated);
+
+        return new SuccessResponseResource('User created successfully', new UserResource($user));
     }
 
     /**

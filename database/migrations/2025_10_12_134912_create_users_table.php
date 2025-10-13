@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('phone_number');
             $table->timestamp('phone_number_verified_at')->nullable();
             $table->string('language')->default('fr');
-            $table->string('email')->unique();
+            $table->string('email')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->foreignId('country_calling_code_id')->constrained()->onDelete('cascade');

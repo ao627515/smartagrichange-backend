@@ -56,6 +56,11 @@ abstract class BaseRepository
         return $this->model->find($id, $columns);
     }
 
+    public function findBy($field, $value, $columns = ['*'])
+    {
+        return $this->model->where($field, $value)->first($columns);
+    }
+
     /**
      * Crée un nouvel enregistrement.
      *
@@ -112,5 +117,41 @@ abstract class BaseRepository
             $query->where($field, $value);
         }
         return $query->get($columns);
+    }
+
+    public function whereFirst(array $conditions, $columns = ['*'])
+    {
+        $query = $this->model->query();
+        foreach ($conditions as $field => $value) {
+            $query->where($field, $value);
+        }
+        return $query->first($columns);
+    }
+
+    public function attach($id, $relation, $relatedId)
+    {
+        $record = $this->find($id);
+        if ($record && method_exists($record, $relation)) {
+            return $record->$relation()->attach($relatedId);
+        }
+        return false;
+    }
+
+    public function detach($id, $relation, $relatedId)
+    {
+        $record = $this->find($id);
+        if ($record && method_exists($record, $relation)) {
+            return $record->$relation()->detach($relatedId);
+        }
+        return false;
+    }
+
+    public function sync($id, $relation, $relatedIds)
+    {
+        $record = $this->find($id);
+        if ($record && method_exists($record, $relation)) {
+            return $record->$relation()->sync($relatedIds);
+        }
+        return false;
     }
 }
