@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\Requests\Aquilas\AquilasSendSmsRequestDto;
 use App\DTO\Responses\Aquilas\AquilasCreditResponseDto;
 use App\DTO\Responses\Aquilas\AquilasSendSmsSuccessResponseDto;
 use Illuminate\Support\Facades\Log;
@@ -20,92 +21,81 @@ class AqilasService
     }
 
     /**
-     * En-têtes communs pour toutes les requêtes AQILAS
+     * Envoyer un SMS via l'API AQILAS
+     *
+     * @param string $to     Numéro du destinataire (ex: +226XXXXXXXX)
+     * @param string $message Contenu du SMS
+     * @return AquilasSendSmsSuccessResponseDto|null
      */
-    protected function headers(): array
+    public function sendSms(AquilasSendSmsRequestDto $data)
     {
-        return [
+        $response = Http::withHeaders([
             'X-AUTH-TOKEN' => $this->apiKey,
             'Accept'       => 'application/json',
-        ];
-    }
+        ])->post($this->baseUrl . 'sms', $data->toArray());
 
-    /**
-     * Méthode générique pour envoyer les requêtes HTTP
-     */
-    protected function sendRequest(string $method, string $endpoint, array $data = []): ?array
-    {
-        try {
-            $response = match (strtoupper($method)) {
-                'GET' => Http::withHeaders($this->headers())->get($this->baseUrl . $endpoint, $data),
-                'POST' => Http::withHeaders($this->headers())->post($this->baseUrl . $endpoint, $data),
-                default => throw new \InvalidArgumentException("HTTP method $method not supported."),
-            };
-
-            if ($response->successful()) {
-                return $response->json();
-            }
-
-            Log::error("AQILAS request failed", [
-                'method'   => $method,
-                'endpoint' => $endpoint,
-                'data'     => $data,
-                'response' => $response->body(),
-            ]);
-        } catch (\Throwable $e) {
-            Log::error("AQILAS request exception: " . $e->getMessage(), [
-                'method'   => $method,
-                'endpoint' => $endpoint,
-                'data'     => $data,
-            ]);
+        if ($response->successful()) {
+            return new AquilasSendSmsSuccessResponseDto(
+                success: $response->json('success'),
+                message: $response->json('message'),
+                bulk_id: $response->json('bulk_id'),
+                cost: $response->json('cost'),
+                currency: $response->json('currency')
+            );
         }
+
+        // Ici tu peux logger ou gérer les erreurs comme tu veux
+        Log::error('AQILAS SMS failed', $data->toArray());
 
         return null;
     }
 
-    /**
-     * Envoyer un SMS
-     */
-    public function sendSms(string $to, string $message): ?AquilasSendSmsSuccessResponseDto
+    public function getCredits()
     {
-        $json = $this->sendRequest('POST', 'sms', ['to' => $to, 'message' => $message]);
+        $response = Http::withHeaders([
+            'X-AUTH-TOKEN' => $this->apiKey,
+            'Accept'       => 'application/json',
+        ])->get($this->baseUrl . 'credits');
 
-        return $json ? new AquilasSendSmsSuccessResponseDto(
-            success: $json['success'] ?? false,
-            message: $json['message'] ?? null,
-            bulk_id: $json['bulk_id'] ?? null,
-            cost: $json['cost'] ?? null,
-            currency: $json['currency'] ?? null
-        ) : null;
+        if ($response->successful()) {
+            return new AquilasCreditResponseDto(
+                success: $response->json('success'),
+                credits: $response->json('credits'),
+                currency: $response->json('currency')
+            );
+        }
+
+        // Ici tu peux logger ou gérer les erreurs comme tu veux
+        Log::error('AQILAS Get Credits failed', [
+            'response' => $response->body(),
+        ]);
+
+        return null;
     }
 
-    /**
-     * Obtenir le solde de crédits
-     */
-    public function getCredits(): ?AquilasCreditResponseDto
+    public function getSmsStatus(string $smsId)
     {
-        $json = $this->sendRequest('GET', 'credits');
+        $response = Http::withHeaders([
+            'X-AUTH-TOKEN' => $this->apiKey,
+            'Accept'       => 'application/json',
+        ])->get($this->baseUrl . 'sms/' . $smsId);
 
-        return $json ? new AquilasCreditResponseDto(
-            success: $json['success'] ?? false,
-            credits: $json['credits'] ?? 0,
-            currency: $json['currency'] ?? null
-        ) : null;
-    }
+        if ($response->successful()) {
+            return new AquilasSmsStatusResponseDto(
+                id: $response->json('id'),
+                to: $response->json('to'),
+                updated_at: $response->json('updated_at'),
+                sent_at: $response->json('sent_at'),
+                status: $response->json('status'),
+            );
+        }
 
-    /**
-     * Obtenir le statut d’un SMS
-     */
-    public function getSmsStatus(string $smsId): ?AquilasSmsStatusResponseDto
-    {
-        $json = $this->sendRequest('GET', 'sms/' . $smsId);
+        // Ici tu peux logger ou gérer les erreurs comme tu veux
+        Log::error('AQILAS Get SMS Status failed', [
+            'smsId' => $smsId,
+            'response' => $response->body(),
+        ]);
 
-        return $json ? new AquilasSmsStatusResponseDto(
-            id: $json['id'] ?? null,
-            to: $json['to'] ?? null,
-            updated_at: $json['updated_at'] ?? null,
-            sent_at: $json['sent_at'] ?? null,
-            status: $json['status'] ?? null,
-        ) : null;
+        return null;
     }
 }

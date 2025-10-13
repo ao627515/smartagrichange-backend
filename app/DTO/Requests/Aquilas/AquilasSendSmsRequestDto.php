@@ -7,9 +7,16 @@ use Spatie\LaravelData\Data;
 class AquilasSendSmsRequestDto extends Data
 {
     public function __construct(
-        public string $from,
-        public string $text,
         public array $to,
+        public ?string $from = null,
+        public ?string $text = null,
         public ?string $send_at = null,
-    ) {}
+    ) {
+        if ($this->from === null) {
+            $this->from = config('otp.sender_id');
+        }
+        if ($this->text === null) {
+            $this->text = config('otp.message_template');
+        }
+    }
 }

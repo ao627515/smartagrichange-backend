@@ -16,6 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('otp_code');
             $table->timestamp('expires_at');
+            $table->string('meta')->nullable();
+            $table->integer('max_attempts')->default(5);
+            $table->integer('attempts')->default(0);
             $table->boolean('is_used')->default(false);
             $table->timestamps();
         });

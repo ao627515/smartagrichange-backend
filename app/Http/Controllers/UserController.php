@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Farmer\FarmerStoreRequest;
 use App\Http\Requests\User\UserStoreRequest;
+use App\Http\Resources\ErrorResponseResource;
 use App\Http\Resources\SuccessResponseResource;
 use App\Http\Resources\User\UserResource;
 use App\Services\UserService;
+use Exception;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -48,11 +50,15 @@ class UserController extends Controller
 
     public function storeFarmer(FarmerStoreRequest $request)
     {
-        $validated = $request->validated();
+        try {
+            $validated = $request->validated();
 
-        $user = $this->userService->createFarmer($validated);
+            $user = $this->userService->createFarmer($validated);
 
-        return new SuccessResponseResource('User created successfully', new UserResource($user));
+            return new SuccessResponseResource('User created successfully', new UserResource($user));
+        } catch (Exception $e) {
+            return new ErrorResponseResource("Farmer creation failed: ", $e->getMessage());
+        }
     }
 
     /**
