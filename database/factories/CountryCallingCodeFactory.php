@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Role>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CountryCallingCode>
  */
-class RoleFactory extends Factory
+class CountryCallingCodeFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,8 +17,8 @@ class RoleFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->unique()->jobTitle(),
-            'description' => $this->faker->sentence(),
+            'country' => $this->faker->country(),
+            'calling_code' => '+' . $this->faker->numberBetween(1, 999),
             'created_at' => now(),
             'updated_at' => now()
         ];
