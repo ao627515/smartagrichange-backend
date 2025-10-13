@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Auth;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\Traits\RequestFailedMethodesTrait;
+use Illuminate\Foundation\Http\FormRequest;
 
-class UserStoreRequest extends FormRequest
+class RegisterFarmerRequest extends FormRequest
 {
     use RequestFailedMethodesTrait;
     /**
@@ -26,10 +26,10 @@ class UserStoreRequest extends FormRequest
         return [
             'lastname' => 'required|string|max:255',
             'firstname' => 'required|string|max:255',
-            // 'phone_number' => 'required|string|max:20',
-            'phone_number' => 'required|string|max:20|unique:users,phone_number',
+            'phone_number' => 'required|string|max:20',
+            // 'phone_number' => 'required|string|max:20|unique:users,phone_number',
             'password' => 'required|string|min:8|confirmed',
-            'calling_code' => 'sometimes|string|max:10|exists:country_calling_codes,calling_code',
+            'calling_code' => 'sometimes|string|max:10|exists:country_calling_codes,calling_code'
         ];
     }
 }

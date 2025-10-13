@@ -19,7 +19,7 @@ class AuthService
             throw new Exception("User not found");
         }
 
-        return JWTAuth::fromUser($user);
+        return $this->tokenResponse(JWTAuth::fromUser($user));
     }
 
     public function login(array $credentials)

@@ -17,8 +17,6 @@ class UserService extends BaseService
     protected $repository;
     private $roleRepository;
     private $callingCodeRepository;
-    private $otpService;
-    private $userOtpService;
 
     public function __construct(
         UserRepository $repository,
@@ -31,7 +29,7 @@ class UserService extends BaseService
         $this->callingCodeRepository = $callingCodeRepository;
     }
 
-    public function createFarmer(array $data)
+    public function create(array $data)
     {
         $data['password'] = Hash::make($data['password']);
 
@@ -44,9 +42,14 @@ class UserService extends BaseService
 
         $user = $this->repository->create($data);
 
-        $this->attachRole($user->id, UserRoleEnum::FARMER);
+        return $user;
+    }
 
-        event(new FarmerRegister($user->id));
+    public function createFarmer(array $data)
+    {
+        $user = $this->create($data);
+
+        $this->attachRole($user->id, UserRoleEnum::FARMER);
 
         return $user;
     }

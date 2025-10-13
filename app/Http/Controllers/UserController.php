@@ -48,18 +48,6 @@ class UserController extends Controller
         return new SuccessResponseResource('User created successfully', new UserResource($user));
     }
 
-    public function storeFarmer(FarmerStoreRequest $request)
-    {
-        try {
-            $validated = $request->validated();
-
-            $user = $this->userService->createFarmer($validated);
-
-            return new SuccessResponseResource('User created successfully', new UserResource($user));
-        } catch (Exception $e) {
-            return new ErrorResponseResource("Farmer creation failed: ", $e->getMessage());
-        }
-    }
 
     /**
      * Display the specified resource.
