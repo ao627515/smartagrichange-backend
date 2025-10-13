@@ -7,6 +7,19 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ErrorResponseResource extends JsonResource
 {
+    protected string $message;
+    protected mixed $errors;
+
+    /**
+     * Create a new instance of the resource with custom properties.
+     */
+    public function __construct(string $message = 'Operation successful', $errors = null)
+    {
+        parent::__construct(null);
+        $this->message = $message ?? 'Operation successful';
+        $this->errors = $errors;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -14,6 +27,10 @@ class ErrorResponseResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'status' => 'success',
+            'message' => $this->message,
+            'errors' => $this->errors,
+        ];
     }
 }
