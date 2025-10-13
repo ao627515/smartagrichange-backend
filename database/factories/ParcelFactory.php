@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Field;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,9 @@ class ParcelFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->word(),
+            'area' => $this->faker->randomFloat(2, 0, 1000),
+            'field_id' => Field::factory(),
         ];
     }
 }

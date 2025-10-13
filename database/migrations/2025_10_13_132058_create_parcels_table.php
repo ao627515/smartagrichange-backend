@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('parcels', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->decimal('area', 10, 2);
+            $table->foreignId('field_id')->constrained('fields')->onDelete('cascade');
             $table->timestamps();
         });
     }
