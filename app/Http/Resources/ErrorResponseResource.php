@@ -13,10 +13,10 @@ class ErrorResponseResource extends JsonResource
     /**
      * Create a new instance of the resource with custom properties.
      */
-    public function __construct(string $message = 'Operation successful', $errors = null)
+    public function __construct(string $message = 'Operation failed', $errors = null)
     {
         parent::__construct(null);
-        $this->message = $message ?? 'Operation successful';
+        $this->message = $message;
         $this->errors = $errors;
     }
 

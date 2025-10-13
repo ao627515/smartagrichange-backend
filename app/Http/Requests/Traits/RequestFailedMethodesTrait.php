@@ -24,7 +24,8 @@ trait RequestFailedMethodesTrait
 
         $response = response()->json(
             data: new ErrorResponseResource(
-                errors: ['validation' => $validator->errors()]
+                message: 'Validation failed.',
+                errors: $validator->errors()
             ),
             status: Response::HTTP_UNPROCESSABLE_ENTITY
         );
