@@ -57,6 +57,11 @@ abstract class BaseService
         return $this->repository->find($id, $columns);
     }
 
+
+    public function findOrFail($id, $columns = ['*'])
+    {
+        return $this->repository->findOrFail($id, $columns);
+    }
     /**
      * Créer un nouvel enregistrement.
      *

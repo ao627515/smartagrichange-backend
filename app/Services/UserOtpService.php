@@ -7,6 +7,10 @@ use App\Repositories\UserOtpRepository;
 
 class UserOtpService extends BaseService
 {
+    /**
+     * Summary of repository
+     * @var UserOtpRepository
+     */
     protected $repository;
 
     public function __construct(UserOtpRepository $repository)
@@ -27,5 +31,24 @@ class UserOtpService extends BaseService
 
 
         return $this->repository->create($data);
+    }
+
+    public function getLatestOtpForUser(int $userId)
+    {
+        return $this->repository->getLatestOtpForUser($userId);
+    }
+
+    public function incrementAttempts($id)
+    {
+        $userOtp = $this->repository->findOrFail($id);
+        $userOtp->attempts += 1;
+        $userOtp->save();
+    }
+
+    public function markAsUsed($id)
+    {
+        $userOtp = $this->repository->findOrFail($id);
+        $userOtp->is_used = true;
+        $userOtp->save();
     }
 }

@@ -13,6 +13,6 @@ Route::prefix('users')->group(function () {
     Route::post('/farmers/register', [UserController::class, 'storeFarmer']);
     Route::post('/login', [UserController::class, 'login']);
     Route::post('/logout', [UserController::class, 'logout']);
-    Route::post('/send-otp', [UserOtpController::class, 'sendOtp']);
-    Route::post('/verify-otp', [UserOtpController::class, 'verifyOtp']);
+    // Route::post('/send-otp', [UserOtpController::class, 'sendOtp']);
+    Route::post('/{user}/verify-otp', [UserOtpController::class, 'verifyOtp']);
 });

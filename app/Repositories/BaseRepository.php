@@ -56,6 +56,12 @@ abstract class BaseRepository
         return $this->model->find($id, $columns);
     }
 
+
+    public function findOrFail($id, $columns = ['*'])
+    {
+        return $this->model->findOrFail($id, $columns);
+    }
+
     public function findBy($field, $value, $columns = ['*'])
     {
         return $this->model->where($field, $value)->first($columns);
