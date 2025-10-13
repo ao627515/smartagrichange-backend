@@ -24,15 +24,11 @@ class UserService extends BaseService
         UserRepository $repository,
         RoleRepository $roleRepository,
         CountryCallingCodeRepository $callingCodeRepository,
-        OtpService $otpService,
-        UserOtpService $userOtpService
     ) {
         parent::__construct($repository);
         $this->repository = $repository;
         $this->roleRepository = $roleRepository;
         $this->callingCodeRepository = $callingCodeRepository;
-        $this->otpService = $otpService;
-        $this->userOtpService = $userOtpService;
     }
 
     public function createFarmer(array $data)
