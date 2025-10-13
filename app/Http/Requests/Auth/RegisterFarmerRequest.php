@@ -26,8 +26,8 @@ class RegisterFarmerRequest extends FormRequest
         return [
             'lastname' => 'required|string|max:255',
             'firstname' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
-            // 'phone_number' => 'required|string|max:20|unique:users,phone_number',
+            // 'phone_number' => 'required|string|max:20',
+            'phone_number' => 'required|string|max:20|unique:users,phone_number',
             'password' => 'required|string|min:8|confirmed',
             'calling_code' => 'sometimes|string|max:10|exists:country_calling_codes,calling_code'
         ];
