@@ -28,6 +28,7 @@ class FieldController extends Controller
     public function store(FieldStoreRequest $request)
     {
         $data = $request->validated();
+        $data['user_id'] = $request->user()->id;
         $field = $this->fieldService->create($data);
 
         return new SuccessResponseResource(
