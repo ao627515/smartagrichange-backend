@@ -87,7 +87,7 @@ class UserService extends BaseService
     {
         $isVerified = $this->repository->isPhoneNumberVerified($phoneNumber, $callingCode);
         if (!$isVerified) {
-            throw new Exception("Phone number {$callingCode}{$phoneNumber} is not verified.");
+            throw new Exception("Phone number {$callingCode}{$phoneNumber} is not verified. Please resend OTP to verify.");
         }
 
         return true;
