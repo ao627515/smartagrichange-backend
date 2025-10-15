@@ -46,7 +46,11 @@ L'API utilise JWT (JSON Web Tokens) pour l'authentification. Incluez le token da
 Authorization: Bearer {votre_jwt_token}
 ```
 
-> **Note importante**: Actuellement, les middlewares d'authentification ne sont pas encore appliqués à toutes les routes protégées. Les routes nécessitant une authentification sont marquées dans cette documentation mais peuvent ne pas encore enforcer la validation du token JWT.
+**Routes protégées par authentification JWT** :
+
+-   Toutes les routes sous `/api/auth/*` (sauf `/api/auth/login`)
+-   Toutes les routes de gestion des champs `/api/fields/*`
+-   Toutes les routes de gestion des parcelles `/api/parcels/*`
 
 ---
 
@@ -318,15 +322,71 @@ Vérifie le code OTP pour un utilisateur spécifique.
 
 ---
 
+#### 2.2 Renvoyer un OTP
+
+**POST** `/api/users/{user}/resend-otp`
+
+Renvoie un nouveau code OTP à l'utilisateur spécifié.
+
+**Paramètres d'URL:**
+
+| Paramètre | Type    | Description         |
+| --------- | ------- | ------------------- |
+| user      | integer | ID de l'utilisateur |
+
+**Réponse de succès (200):**
+
+```json
+{
+    "status": "success",
+    "message": "OTP resent successfully",
+    "data": null
+}
+```
+
+**Réponses d'erreur:**
+
+-   `500 Internal Server Error`: Erreur lors de l'envoi de l'OTP
+
+---
+
 ### 3. Gestion des Champs
 
 #### 3.1 Lister les Champs
 
 **GET** `/api/fields`
 
-Récupère la liste de tous les champs.
+Récupère la liste de tous les champs de l'utilisateur authentifié, triés par date de création décroissante.
 
-> **Note**: Cette fonctionnalité n'est pas encore implémentée dans le contrôleur.
+**En-têtes requis:**
+
+```text
+Authorization: Bearer {jwt_token}
+```
+
+**Réponse de succès (200):**
+
+```json
+{
+    "status": "success",
+    "message": "Fields retrieved successfully",
+    "data": [
+        {
+            "id": 1,
+            "name": "Champ Principal",
+            "location": "Bretagne, France",
+            "user_id": 1,
+            "created_at": "2024-01-15T10:30:00.000000Z",
+            "updated_at": "2024-01-15T10:30:00.000000Z"
+        }
+    ]
+}
+```
+
+**Réponses d'erreur:**
+
+-   `401 Unauthorized`: Token JWT manquant ou invalide
+-   `500 Internal Server Error`: Erreur serveur
 
 ---
 
@@ -390,7 +450,40 @@ Content-Type: application/json
 
 Récupère les détails d'un champ spécifique.
 
-> **Note**: Cette fonctionnalité n'est pas encore implémentée dans le contrôleur.
+**En-têtes requis:**
+
+```text
+Authorization: Bearer {jwt_token}
+```
+
+**Paramètres d'URL:**
+
+| Paramètre | Type    | Description |
+| --------- | ------- | ----------- |
+| field     | integer | ID du champ |
+
+**Réponse de succès (200):**
+
+```json
+{
+    "status": "success",
+    "message": "Field retrieved successfully",
+    "data": {
+        "id": 1,
+        "name": "Champ Principal",
+        "location": "Bretagne, France",
+        "user_id": 1,
+        "created_at": "2024-01-15T10:30:00.000000Z",
+        "updated_at": "2024-01-15T10:30:00.000000Z"
+    }
+}
+```
+
+**Réponses d'erreur:**
+
+-   `401 Unauthorized`: Token JWT manquant ou invalide
+-   `404 Not Found`: Champ non trouvé
+-   `500 Internal Server Error`: Erreur serveur
 
 ---
 
@@ -400,7 +493,51 @@ Récupère les détails d'un champ spécifique.
 
 Modifie un champ existant.
 
-> **Note**: Cette fonctionnalité n'est pas encore implémentée dans le contrôleur.
+**En-têtes requis:**
+
+```text
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+**Paramètres d'URL:**
+
+| Paramètre | Type    | Description |
+| --------- | ------- | ----------- |
+| field     | integer | ID du champ |
+
+**Corps de la requête:**
+
+```json
+{
+    "name": "Nouveau Nom du Champ",
+    "location": "Nouvelle Localisation"
+}
+```
+
+**Réponse de succès (200):**
+
+```json
+{
+    "status": "success",
+    "message": "Field updated successfully",
+    "data": {
+        "id": 1,
+        "name": "Nouveau Nom du Champ",
+        "location": "Nouvelle Localisation",
+        "user_id": 1,
+        "created_at": "2024-01-15T10:30:00.000000Z",
+        "updated_at": "2024-01-15T12:00:00.000000Z"
+    }
+}
+```
+
+**Réponses d'erreur:**
+
+-   `401 Unauthorized`: Token JWT manquant ou invalide
+-   `404 Not Found`: Champ non trouvé
+-   `422 Unprocessable Entity`: Erreurs de validation
+-   `500 Internal Server Error`: Erreur serveur
 
 ---
 
@@ -410,7 +547,76 @@ Modifie un champ existant.
 
 Supprime un champ existant.
 
-> **Note**: Cette fonctionnalité n'est pas encore implémentée dans le contrôleur.
+**En-têtes requis:**
+
+```text
+Authorization: Bearer {jwt_token}
+```
+
+**Paramètres d'URL:**
+
+| Paramètre | Type    | Description |
+| --------- | ------- | ----------- |
+| field     | integer | ID du champ |
+
+**Réponse de succès (200):**
+
+```json
+{
+    "status": "success",
+    "message": "Field deleted successfully",
+    "data": null
+}
+```
+
+**Réponses d'erreur:**
+
+-   `401 Unauthorized`: Token JWT manquant ou invalide
+-   `404 Not Found`: Champ non trouvé
+-   `500 Internal Server Error`: Erreur serveur
+
+---
+
+#### 3.6 Récupérer les Parcelles d'un Champ
+
+**GET** `/api/fields/{field}/parcels`
+
+Récupère toutes les parcelles associées à un champ spécifique.
+
+**En-têtes requis:**
+
+```text
+Authorization: Bearer {jwt_token}
+```
+
+**Paramètres d'URL:**
+
+| Paramètre | Type    | Description |
+| --------- | ------- | ----------- |
+| field     | integer | ID du champ |
+
+**Réponse de succès (200):**
+
+```json
+{
+    "status": "success",
+    "message": "Parcels retrieved successfully",
+    "data": [
+        {
+            "id": 1,
+            "field_id": 1,
+            "created_at": "2024-01-15T10:30:00.000000Z",
+            "updated_at": "2024-01-15T10:30:00.000000Z"
+        }
+    ]
+}
+```
+
+**Réponses d'erreur:**
+
+-   `401 Unauthorized`: Token JWT manquant ou invalide
+-   `404 Not Found`: Champ non trouvé
+-   `500 Internal Server Error`: Erreur serveur
 
 ---
 
@@ -420,9 +626,35 @@ Supprime un champ existant.
 
 **GET** `/api/parcels`
 
-Récupère la liste de toutes les parcelles.
+Récupère la liste de toutes les parcelles, triées par date de création décroissante.
 
-> **Note**: Cette fonctionnalité n'est pas encore implémentée dans le contrôleur.
+**En-têtes requis:**
+
+```text
+Authorization: Bearer {jwt_token}
+```
+
+**Réponse de succès (200):**
+
+```json
+{
+    "status": "success",
+    "message": "Parcels retrieved successfully",
+    "data": [
+        {
+            "id": 1,
+            "field_id": 1,
+            "created_at": "2024-01-15T10:30:00.000000Z",
+            "updated_at": "2024-01-15T10:30:00.000000Z"
+        }
+    ]
+}
+```
+
+**Réponses d'erreur:**
+
+-   `401 Unauthorized`: Token JWT manquant ou invalide
+-   `500 Internal Server Error`: Erreur serveur
 
 ---
 
@@ -430,9 +662,49 @@ Récupère la liste de toutes les parcelles.
 
 **POST** `/api/parcels`
 
-Crée une nouvelle parcelle.
+Crée une nouvelle parcelle associée à un champ.
 
-> **Note**: Cette fonctionnalité n'est pas encore implémentée dans le contrôleur.
+**En-têtes requis:**
+
+```text
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+**Corps de la requête:**
+
+```json
+{
+    "field_id": 1
+}
+```
+
+**Paramètres:**
+
+| Paramètre | Type    | Requis | Description        |
+| --------- | ------- | ------ | ------------------ |
+| field_id  | integer | Oui    | ID du champ parent |
+
+**Réponse de succès (201):**
+
+```json
+{
+    "status": "success",
+    "message": "Parcel created successfully",
+    "data": {
+        "id": 1,
+        "field_id": 1,
+        "created_at": "2024-01-15T10:30:00.000000Z",
+        "updated_at": "2024-01-15T10:30:00.000000Z"
+    }
+}
+```
+
+**Réponses d'erreur:**
+
+-   `401 Unauthorized`: Token JWT manquant ou invalide
+-   `422 Unprocessable Entity`: Erreurs de validation (field_id invalide)
+-   `500 Internal Server Error`: Erreur serveur
 
 ---
 
@@ -442,7 +714,38 @@ Crée une nouvelle parcelle.
 
 Récupère les détails d'une parcelle spécifique.
 
-> **Note**: Cette fonctionnalité n'est pas encore implémentée dans le contrôleur.
+**En-têtes requis:**
+
+```text
+Authorization: Bearer {jwt_token}
+```
+
+**Paramètres d'URL:**
+
+| Paramètre | Type    | Description       |
+| --------- | ------- | ----------------- |
+| parcel    | integer | ID de la parcelle |
+
+**Réponse de succès (200):**
+
+```json
+{
+    "status": "success",
+    "message": "Parcel retrieved successfully",
+    "data": {
+        "id": 1,
+        "field_id": 1,
+        "created_at": "2024-01-15T10:30:00.000000Z",
+        "updated_at": "2024-01-15T10:30:00.000000Z"
+    }
+}
+```
+
+**Réponses d'erreur:**
+
+-   `401 Unauthorized`: Token JWT manquant ou invalide
+-   `404 Not Found`: Parcelle non trouvée
+-   `500 Internal Server Error`: Erreur serveur
 
 ---
 
@@ -452,7 +755,48 @@ Récupère les détails d'une parcelle spécifique.
 
 Modifie une parcelle existante.
 
-> **Note**: Cette fonctionnalité n'est pas encore implémentée dans le contrôleur.
+**En-têtes requis:**
+
+```text
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+**Paramètres d'URL:**
+
+| Paramètre | Type    | Description       |
+| --------- | ------- | ----------------- |
+| parcel    | integer | ID de la parcelle |
+
+**Corps de la requête:**
+
+```json
+{
+    "field_id": 2
+}
+```
+
+**Réponse de succès (200):**
+
+```json
+{
+    "status": "success",
+    "message": "Parcel updated successfully",
+    "data": {
+        "id": 1,
+        "field_id": 2,
+        "created_at": "2024-01-15T10:30:00.000000Z",
+        "updated_at": "2024-01-15T12:00:00.000000Z"
+    }
+}
+```
+
+**Réponses d'erreur:**
+
+-   `401 Unauthorized`: Token JWT manquant ou invalide
+-   `404 Not Found`: Parcelle non trouvée
+-   `422 Unprocessable Entity`: Erreurs de validation
+-   `500 Internal Server Error`: Erreur serveur
 
 ---
 
@@ -462,7 +806,33 @@ Modifie une parcelle existante.
 
 Supprime une parcelle existante.
 
-> **Note**: Cette fonctionnalité n'est pas encore implémentée dans le contrôleur.
+**En-têtes requis:**
+
+```text
+Authorization: Bearer {jwt_token}
+```
+
+**Paramètres d'URL:**
+
+| Paramètre | Type    | Description       |
+| --------- | ------- | ----------------- |
+| parcel    | integer | ID de la parcelle |
+
+**Réponse de succès (200):**
+
+```json
+{
+    "status": "success",
+    "message": "Parcel deleted successfully",
+    "data": null
+}
+```
+
+**Réponses d'erreur:**
+
+-   `401 Unauthorized`: Token JWT manquant ou invalide
+-   `404 Not Found`: Parcelle non trouvée
+-   `500 Internal Server Error`: Erreur serveur
 
 ---
 
@@ -639,6 +1009,91 @@ curl -X POST http://localhost:8000/api/auth/logout \
   -H "Authorization: Bearer {jwt_token}"
 ```
 
+### Vérification et Renvoi OTP
+
+```bash
+# Vérification OTP (remplacer {user_id} par l'ID retourné lors de l'inscription)
+curl -X POST http://localhost:8000/api/users/{user_id}/verify-otp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "otp_code": "123456"
+  }'
+
+# Renvoyer un OTP
+curl -X POST http://localhost:8000/api/users/{user_id}/resend-otp \
+  -H "Content-Type: application/json"
+```
+
+### Gestion Complète des Champs
+
+```bash
+# 1. Créer un champ
+curl -X POST http://localhost:8000/api/fields \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {jwt_token}" \
+  -d '{
+    "name": "Champ Bio Nord",
+    "location": "Normandie, France"
+  }'
+
+# 2. Lister tous les champs
+curl -X GET http://localhost:8000/api/fields \
+  -H "Authorization: Bearer {jwt_token}"
+
+# 3. Afficher un champ spécifique
+curl -X GET http://localhost:8000/api/fields/1 \
+  -H "Authorization: Bearer {jwt_token}"
+
+# 4. Mettre à jour un champ
+curl -X PUT http://localhost:8000/api/fields/1 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {jwt_token}" \
+  -d '{
+    "name": "Champ Bio Nord Modifié",
+    "location": "Normandie, France - Zone Est"
+  }'
+
+# 5. Supprimer un champ
+curl -X DELETE http://localhost:8000/api/fields/1 \
+  -H "Authorization: Bearer {jwt_token}"
+
+# 6. Récupérer les parcelles d'un champ
+curl -X GET http://localhost:8000/api/fields/1/parcels \
+  -H "Authorization: Bearer {jwt_token}"
+```
+
+### Gestion Complète des Parcelles
+
+```bash
+# 1. Créer une parcelle
+curl -X POST http://localhost:8000/api/parcels \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {jwt_token}" \
+  -d '{
+    "field_id": 1
+  }'
+
+# 2. Lister toutes les parcelles
+curl -X GET http://localhost:8000/api/parcels \
+  -H "Authorization: Bearer {jwt_token}"
+
+# 3. Afficher une parcelle spécifique
+curl -X GET http://localhost:8000/api/parcels/1 \
+  -H "Authorization: Bearer {jwt_token}"
+
+# 4. Mettre à jour une parcelle
+curl -X PUT http://localhost:8000/api/parcels/1 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {jwt_token}" \
+  -d '{
+    "field_id": 2
+  }'
+
+# 5. Supprimer une parcelle
+curl -X DELETE http://localhost:8000/api/parcels/1 \
+  -H "Authorization: Bearer {jwt_token}"
+```
+
 ### Vérification OTP
 
 ```bash
@@ -668,34 +1123,35 @@ curl -X POST http://localhost:8000/api/fields \
 
 ### Statut des Contrôleurs
 
-| Contrôleur                     | Statut     | Fonctionnalités implémentées |
-| ------------------------------ | ---------- | ---------------------------- |
-| `AuthController`               | ✅ Complet | login, logout, refresh, me   |
-| `RegisterController`           | ✅ Complet | registerFarmer               |
-| `UserOtpController`            | ✅ Complet | verifyOtp                    |
-| `FieldController`              | 🔄 Partiel | store seulement              |
-| `ParcelController`             | ❌ Vide    | Aucune méthode implémentée   |
-| `CountryCallingCodeController` | ❌ Vide    | Aucune méthode implémentée   |
-| `RoleController`               | ❌ Vide    | Aucune méthode implémentée   |
-| `UserController`               | ❌ Vide    | Aucune méthode implémentée   |
+| Contrôleur                     | Statut     | Fonctionnalités implémentées                    |
+| ------------------------------ | ---------- | ----------------------------------------------- |
+| `AuthController`               | ✅ Complet | login, logout, refresh, me                      |
+| `RegisterController`           | ✅ Complet | registerFarmer                                  |
+| `UserOtpController`            | ✅ Complet | verifyOtp, resendOtp                            |
+| `FieldController`              | ✅ Complet | index, store, show, update, destroy, getParcels |
+| `ParcelController`             | ✅ Complet | index, store, show, update, destroy             |
+| `CountryCallingCodeController` | ❌ Vide    | Aucune méthode implémentée                      |
+| `RoleController`               | ❌ Vide    | Aucune méthode implémentée                      |
+| `UserController`               | 🔄 Partiel | Méthodes définies mais non implémentées         |
 
 ### Fonctionnalités Implémentées
 
 -   ✅ Inscription des agriculteurs avec JWT
 -   ✅ Authentification complète (login/logout/refresh/me)
--   ✅ Vérification OTP
--   ✅ Création de champs
+-   ✅ Vérification et renvoi OTP
+-   ✅ CRUD complet pour les champs
+-   ✅ CRUD complet pour les parcelles
+-   ✅ Récupération des parcelles d'un champ
 -   ✅ Système de réponses standardisées
--   ✅ Validation des requêtes avec unicité du numéro de téléphone
+-   ✅ Validation des requêtes avec Form Requests
+-   ✅ Middlewares d'authentification JWT sur routes protégées
 
 ### Fonctionnalités en Développement
 
--   🔄 CRUD complet pour les champs
--   🔄 CRUD complet pour les parcelles
 -   🔄 Gestion des rôles utilisateurs
 -   🔄 Endpoints de listing avec pagination
 -   🔄 Gestion des codes d'appel de pays
--   🔄 Middlewares d'authentification sur les routes protégées
+-   🔄 Filtrage et recherche avancés
 
 ### Routes Disponibles (selon routes/api.php)
 
@@ -703,39 +1159,44 @@ curl -X POST http://localhost:8000/api/fields \
 
 -   `POST /api/users/farmers/register` → RegisterController@registerFarmer ✅
 -   `POST /api/users/{user}/verify-otp` → UserOtpController@verifyOtp ✅
+-   `POST /api/users/{user}/resend-otp` → UserOtpController@resendOtp ✅
 
 **Routes d'authentification**:
 
 -   `POST /api/auth/login` → AuthController@login ✅
--   `POST /api/auth/logout` → AuthController@logout ✅
--   `POST /api/auth/refresh` → AuthController@refresh ✅
--   `GET /api/auth/me` → AuthController@me ✅
+-   `POST /api/auth/logout` → AuthController@logout ✅ (protégée)
+-   `POST /api/auth/refresh` → AuthController@refresh ✅ (protégée)
+-   `GET /api/auth/me` → AuthController@me ✅ (protégée)
 
-**Routes API Resources (définies mais non implémentées)**:
+**Routes de gestion des champs** (toutes protégées par auth:api):
 
--   `GET /api/fields` → FieldController@index ❌
+-   `GET /api/fields` → FieldController@index ✅
 -   `POST /api/fields` → FieldController@store ✅
--   `GET /api/fields/{field}` → FieldController@show ❌
--   `PUT /api/fields/{field}` → FieldController@update ❌
--   `DELETE /api/fields/{field}` → FieldController@destroy ❌
+-   `GET /api/fields/{field}` → FieldController@show ✅
+-   `PUT /api/fields/{field}` → FieldController@update ✅
+-   `DELETE /api/fields/{field}` → FieldController@destroy ✅
+-   `GET /api/fields/{field}/parcels` → FieldController@getParcels ✅
 
--   `GET /api/parcels` → ParcelController@index ❌
--   `POST /api/parcels` → ParcelController@store ❌
--   `GET /api/parcels/{parcel}` → ParcelController@show ❌
--   `PUT /api/parcels/{parcel}` → ParcelController@update ❌
--   `DELETE /api/parcels/{parcel}` → ParcelController@destroy ❌
+**Routes de gestion des parcelles** (toutes protégées par auth:api):
+
+-   `GET /api/parcels` → ParcelController@index ✅
+-   `POST /api/parcels` → ParcelController@store ✅
+-   `GET /api/parcels/{parcel}` → ParcelController@show ✅
+-   `PUT /api/parcels/{parcel}` → ParcelController@update ✅
+-   `DELETE /api/parcels/{parcel}` → ParcelController@destroy ✅
 
 ### Améliorations Suggérées
 
-1. **Middlewares d'authentification**: Appliquer les middlewares JWT aux routes protégées
-2. **Implémentation CRUD**: Compléter les méthodes manquantes dans les contrôleurs
-3. **Pagination**: Ajouter la pagination pour les listes d'entités
-4. **Filtrage**: Ajouter des paramètres de filtrage et de recherche
-5. **Documentation**: Ajouter une documentation Swagger/OpenAPI
-6. **Tests**: Implémenter des tests unitaires et d'intégration
-7. **Cache**: Implémenter un système de cache pour les requêtes fréquentes
-8. **Rate Limiting**: Ajouter une limitation du taux de requêtes
-9. **Logs**: Améliorer le système de logging pour les erreurs et actions importantes
+1. **Pagination**: Ajouter la pagination pour les listes d'entités (fields, parcels)
+2. **Filtrage et tri**: Ajouter des paramètres de filtrage et de tri personnalisés
+3. **Documentation Swagger**: Générer une documentation Swagger/OpenAPI interactive
+4. **Tests**: Implémenter des tests unitaires et d'intégration complets
+5. **Cache**: Implémenter un système de cache Redis pour les requêtes fréquentes
+6. **Rate Limiting**: Ajouter une limitation du taux de requêtes par IP/utilisateur
+7. **Logs structurés**: Améliorer le système de logging avec des logs structurés
+8. **Notifications**: Implémenter un système de notifications temps réel
+9. **Permissions granulaires**: Ajouter un système de permissions basé sur les rôles
+10. **Endpoints statistiques**: Créer des endpoints pour les statistiques et rapports
 
 ### Sécurité
 
@@ -748,15 +1209,17 @@ curl -X POST http://localhost:8000/api/fields \
 
 ### Problèmes Connus et Limitations
 
-1. **Middlewares d'authentification manquants**: Les routes qui nécessitent une authentification n'appliquent pas encore les middlewares JWT appropriés.
+1. **Absence de pagination**: Les endpoints de listing ne supportent pas encore la pagination, ce qui peut causer des problèmes de performance avec de grandes quantités de données.
 
-2. **CRUD incomplet**: Seule la création de champs est implémentée. Les opérations de lecture, mise à jour et suppression ne sont pas encore développées.
+2. **Gestion des rôles limitée**: Bien que des modèles de rôles existent, aucun endpoint n'est disponible pour leur gestion et les permissions ne sont pas implémentées.
 
-3. **Gestion des parcelles**: Le contrôleur `ParcelController` est entièrement vide et aucune fonctionnalité n'est implémentée.
+3. **Codes d'appel de pays**: Le `CountryCallingCodeController` existe mais n'a aucune méthode implémentée.
 
-4. **Codes d'appel de pays**: Le `CountryCallingCodeController` existe mais n'a aucune méthode implémentée.
+4. **Validation des relations**: La validation des relations entre champs et parcelles pourrait être renforcée (vérifier que l'utilisateur possède le champ lors de la création d'une parcelle).
 
-5. **Gestion des rôles**: Bien que des modèles de rôles existent, aucun endpoint n'est disponible pour leur gestion.
+5. **Soft deletes**: Les suppressions sont définitives, pas de soft delete implémenté.
+
+6. **Gestion d'erreurs**: La gestion d'erreurs pourrait être améliorée avec des codes d'erreur personnalisés et des messages plus descriptifs.
 
 ### Notes de Déploiement
 
@@ -794,7 +1257,7 @@ curl -X POST http://localhost:8000/api/fields \
 ---
 
 **Version de l'API**: 1.0  
-**Dernière mise à jour**: 13 octobre 2025  
+**Dernière mise à jour**: 15 octobre 2025  
 **Framework**: Laravel 12  
 **Base de données**: Configurée via migrations Laravel  
 **Authentification**: JWT (tymon/jwt-auth)
