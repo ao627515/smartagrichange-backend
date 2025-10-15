@@ -95,6 +95,12 @@ class OtpService
 
     public function verifyOtp($userId, string $otp): bool
     {
+        $user = $this->userService->findOrFail($userId);
+
+        if ($user->phone_number_verified_at) {
+            throw new Exception('User phone number is already verified');
+        }
+
         $userOtp = $this->userOtpService->getLatestOtpForUser($userId);
 
         if (!$userOtp) {
