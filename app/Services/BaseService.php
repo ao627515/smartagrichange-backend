@@ -83,11 +83,12 @@ abstract class BaseService
      *
      * @param int $id
      * @param array $data
-     * @return bool
+     * @return Model
      */
     public function update($id, array $data)
     {
-        return $this->repository->update($id, $data);
+        $this->repository->update($id, $data);
+        return $this->repository->find($id);
     }
 
     /**

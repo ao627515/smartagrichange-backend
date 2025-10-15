@@ -25,6 +25,9 @@ class SendOtp
      */
     public function handle(FarmerRegister $event): void
     {
+        if (env('MODE_DEMO', false)) {
+            return;
+        }
         $user = $this->userService->find($event->userId);
 
         if (!$user) {

@@ -12,8 +12,10 @@ use Illuminate\Http\Request;
 
 class FieldController extends Controller
 {
+
     public function __construct(
         private FieldService $fieldService
+
     ) {}
     /**
      * Display a listing of the resource.

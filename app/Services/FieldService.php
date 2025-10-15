@@ -32,7 +32,9 @@ class FieldService extends BaseService
         if ($field->user_id !== Auth::id()) {
             throw new Exception('Unauthorized', 403);
         }
-        return $this->repository->update($id, $data);
+        $this->repository->update($id, $data);
+
+        return $this->repository->find($id);
     }
 
     public function delete($id)
