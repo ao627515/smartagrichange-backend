@@ -15,6 +15,7 @@ use App\Http\Controllers\RegisterController;
 Route::prefix('users')->group(function () {
     Route::post('/farmers/register', [RegisterController::class, 'registerFarmer']);
     Route::post('/{user}/verify-otp', [UserOtpController::class, 'verifyOtp']);
+    Route::post('/{user}/resend-otp', [UserOtpController::class, 'resendOtp']);
 });
 
 Route::prefix('auth')->group(function () {

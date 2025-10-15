@@ -36,4 +36,14 @@ class UserOtpController extends Controller
             return new ErrorResponseResource("OTP verification failed: ", $e->getMessage());
         }
     }
+
+    public function resendOtp($user)
+    {
+        try {
+            $this->otpService->resendOtp($user);
+            return new SuccessResponseResource('OTP resent successfully', null);
+        } catch (Exception $e) {
+            return new ErrorResponseResource("Resend OTP failed: ", $e->getMessage());
+        }
+    }
 }

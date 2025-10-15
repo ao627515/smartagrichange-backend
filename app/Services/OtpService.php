@@ -5,11 +5,13 @@ namespace App\Services;
 use Exception;
 use App\Models\User;
 use App\Events\OtpVerifed;
+use App\DTO\Requests\Aquilas\AquilasSendSmsRequestDto;
 
 class OtpService
 {
     private AqilasService $aquilasService;
     private UserOtpService $userOtpService;
+    private UserService $userService;
     private int $otpLength;
     private int $otpExpiry;
     private int $maxAttempts;
@@ -17,10 +19,12 @@ class OtpService
 
     public function __construct(
         AqilasService $aquilasService,
-        UserOtpService $userOtpService
+        UserOtpService $userOtpService,
+        UserService $userService
     ) {
         $this->aquilasService = $aquilasService;
         $this->userOtpService = $userOtpService;
+        $this->userService = $userService;
         $this->otpLength = config('otp.otp_length', 6);
         $this->otpExpiry = config('otp.otp_expiry', 5);
         $this->maxAttempts = config('otp.max_attempts', 3);
@@ -34,7 +38,50 @@ class OtpService
 
     public function sendOtp($data)
     {
+        if (env('MODE_DEMO', false)) {
+            return;
+        }
         return $this->aquilasService->sendSms($data);
+    }
+
+    public function resendOtp($userId)
+    {
+        $user = $this->userService->findOrFail($userId);
+
+        $lastOtp = $this->userOtpService->getLatestOtpForUser($userId);
+        if ($lastOtp && !$lastOtp->is_expired) {
+            $timeSinceLastOtp = now()->diffInMinutes($lastOtp->created_at);
+            if ($timeSinceLastOtp < $this->resendInterval) {
+                // throw new Exception('Please wait before requesting a new OTP');
+                return;
+            }
+        }
+
+        $this->handleOtp($userId);
+    }
+
+    public function handleOtp($userId): void
+    {
+        $user = $this->userService->findOrFail($userId);
+
+        $otp = $this->generateOtp();
+
+        $req = AquilasSendSmsRequestDto::from([
+            'to' => [$user->full_phone_number],
+        ]);
+        $req->text = $req->getOtp($otp);
+
+        $meta = $this->sendOtp($req);
+
+        $meta = $meta ? json_encode($meta->toArray()) : null;
+        // $meta = null;
+
+
+        $this->userOtpService->create([
+            'user_id' => $user->id,
+            'otp_code' => $otp,
+            'meta' => $meta,
+        ]);
     }
 
     public function verifyOtp($userId, string $otp): bool
