@@ -26,4 +26,39 @@ class UserRepository extends BaseRepository
 
         return $user->phone_number_verified_at ? true : false;
     }
+
+    public function phoneNumberExists($phoneNumber, $callingCode)
+    {
+        $user = $this->model->where('phone_number', $phoneNumber)
+            ->whereHas('countryCallingCode', function ($query) use ($callingCode) {
+                $query->where('calling_code', $callingCode);
+            })->first();
+
+        return $user ? true : false;
+    }
+
+
+
+    public function phoneNumberExistsAndNotVerified($phoneNumber, $callingCode)
+    {
+        $user = $this->model->where('phone_number', $phoneNumber)
+            ->whereHas('countryCallingCode', function ($query) use ($callingCode) {
+                $query->where('calling_code', $callingCode);
+            })->first();
+
+        if ($user && is_null($user->phone_number_verified_at)) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    public function findUserByPhoneNumberAndCallingCode($phoneNumber, $callingCode, $columns = ['*'])
+    {
+        return $this->model->where('phone_number', $phoneNumber)
+            ->whereHas('countryCallingCode', function ($query) use ($callingCode) {
+                $query->where('calling_code', $callingCode);
+            })->first($columns);
+    }
 }

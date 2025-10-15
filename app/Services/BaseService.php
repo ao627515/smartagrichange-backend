@@ -72,6 +72,7 @@ abstract class BaseService
         }
         return $model;
     }
+
     /**
      * Créer un nouvel enregistrement.
      *

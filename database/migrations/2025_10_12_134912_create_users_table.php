@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('password');
             $table->foreignId('country_calling_code_id')->constrained()->onDelete('cascade');
             $table->rememberToken();
+            $table->unique(['country_calling_code_id', 'phone_number']);
             $table->timestamps();
         });
 

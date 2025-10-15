@@ -72,6 +72,11 @@ abstract class BaseRepository
         return $this->model->where($field, $value)->first($columns);
     }
 
+    public function findByMany($field, $values, $columns = ['*'])
+    {
+        return $this->model->whereIn($field, $values)->get($columns);
+    }
+
     /**
      * Crée un nouvel enregistrement.
      *

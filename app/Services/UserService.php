@@ -97,4 +97,19 @@ class UserService extends BaseService
     {
         return $this->repository->isPhoneNumberVerified($phoneNumber, $callingCode);
     }
+
+    public function phoneNumberExists($phoneNumber, $callingCode): bool
+    {
+        return $this->repository->phoneNumberExists($phoneNumber, $callingCode);
+    }
+
+    public function phoneNumberExistsAndNotVerified($phoneNumber, $callingCode): bool
+    {
+        return $this->repository->phoneNumberExistsAndNotVerified($phoneNumber, $callingCode);
+    }
+
+    public function findUserByPhoneNumberAndCallingCode($phoneNumber, $callingCode, $columns = ['*'])
+    {
+        return $this->repository->findUserByPhoneNumberAndCallingCode($phoneNumber, $callingCode, $columns);
+    }
 }
