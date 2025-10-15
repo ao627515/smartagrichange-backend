@@ -8,8 +8,10 @@ class ParcelService extends BaseService
 {
     protected $repository;
 
-    public function __construct(ParcelRepository $repository)
-    {
+    public function __construct(
+        ParcelRepository $repository,
+        private FieldService $fieldService
+    ) {
         parent::__construct($repository);
         $this->repository = $repository;
     }

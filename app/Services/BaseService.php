@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 abstract class BaseService
 {
@@ -65,7 +66,11 @@ abstract class BaseService
 
     public function findOrFail($id, $columns = ['*'])
     {
-        return $this->repository->findOrFail($id, $columns);
+        $model = $this->repository->find($id, $columns);
+        if (!$model) {
+            throw new ModelNotFoundException("Model with ID {$id} not found.");
+        }
+        return $model;
     }
     /**
      * Créer un nouvel enregistrement.
@@ -87,6 +92,8 @@ abstract class BaseService
      */
     public function update($id, array $data)
     {
+        $this->findOrFail($id);
+
         $this->repository->update($id, $data);
         return $this->repository->find($id);
     }
@@ -99,6 +106,8 @@ abstract class BaseService
      */
     public function delete($id)
     {
+        $this->findOrFail($id);
+
         return $this->repository->delete($id);
     }
 
