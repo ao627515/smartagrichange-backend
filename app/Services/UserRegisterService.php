@@ -8,8 +8,7 @@ use App\Events\FarmerRegister;
 class UserRegisterService
 {
     public function __construct(
-        private UserService $userService,
-        private AuthService $authService
+        private UserService $userService
     ) {}
 
     public function registerFarmer(array $data)
@@ -20,8 +19,8 @@ class UserRegisterService
 
         event(new FarmerRegister($user->id));
 
-        $tokenData = $this->authService->AuthFromUser($user->id);
+        // $tokenData = $this->authService->AuthFromUser($user->id);
 
-        return $tokenData;
+        return $user->refresh();
     }
 }
