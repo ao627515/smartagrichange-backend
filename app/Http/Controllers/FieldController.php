@@ -22,11 +22,13 @@ class FieldController extends Controller
      */
     public function index()
     {
-        $fields = $this->fieldService->allOrdered('created_at', 'desc');
-        return new SuccessResponseResource(
-            'Fields retrieved successfully',
-            FieldResource::collection($fields)
-        );
+        return  $this->handleRequestException(function () {
+            $fields = $this->fieldService->allOrdered('created_at', 'desc');
+            return new SuccessResponseResource(
+                'Fields retrieved successfully',
+                FieldResource::collection($fields)
+            );
+        });
     }
 
     /**
@@ -34,14 +36,16 @@ class FieldController extends Controller
      */
     public function store(FieldStoreRequest $request)
     {
-        $data = $request->validated();
-        $data['user_id'] = $request->user()->id;
-        $field = $this->fieldService->create($data);
+        return $this->handleRequestException(function () use ($request) {
+            $data = $request->validated();
+            $data['user_id'] = $request->user()->id;
+            $field = $this->fieldService->create($data);
 
-        return new SuccessResponseResource(
-            'Field created successfully',
-            new FieldResource($field)
-        );
+            return new SuccessResponseResource(
+                'Field created successfully',
+                new FieldResource($field)
+            );
+        });
     }
 
     /**
@@ -49,8 +53,13 @@ class FieldController extends Controller
      */
     public function show($field)
     {
-        $field = $this->fieldService->find($field);
-        return new FieldResource($field);
+        return $this->handleRequestException(function () use ($field) {
+            $field = $this->fieldService->find($field);
+            return new SuccessResponseResource(
+                'Field retrieved successfully',
+                new FieldResource($field)
+            );
+        });
     }
 
     /**
@@ -58,12 +67,15 @@ class FieldController extends Controller
      */
     public function update(FieldUpdateRequest $request, $field)
     {
-        $data = $request->validated();
-        $field = $this->fieldService->update($field, $data);
-        return new SuccessResponseResource(
-            'Field updated successfully',
-            new FieldResource($field)
-        );
+        return $this->handleRequestException(function () use ($request, $field) {
+            $data = $request->validated();
+            $updatedField = $this->fieldService->update($field, $data);
+
+            return new SuccessResponseResource(
+                'Field updated successfully',
+                new FieldResource($updatedField)
+            );
+        });
     }
 
     /**
@@ -71,9 +83,9 @@ class FieldController extends Controller
      */
     public function destroy(Field $field)
     {
-        $this->fieldService->delete($field->id);
-        return new SuccessResponseResource(
-            'Field deleted successfully'
-        );
+        return $this->handleRequestException(function () use ($field) {
+            $this->fieldService->delete($field->id);
+            return new SuccessResponseResource('Field deleted successfully');
+        });
     }
 }
