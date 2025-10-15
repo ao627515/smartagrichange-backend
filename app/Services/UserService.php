@@ -92,4 +92,9 @@ class UserService extends BaseService
 
         return true;
     }
+
+    public function isPhoneNumberVerified($phoneNumber, $callingCode): bool
+    {
+        return $this->repository->isPhoneNumberVerified($phoneNumber, $callingCode);
+    }
 }

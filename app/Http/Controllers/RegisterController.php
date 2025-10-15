@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserAttemptingRegsiter;
 use Exception;
 use Illuminate\Http\Request;
 use App\Services\AuthService;
@@ -24,6 +25,8 @@ class RegisterController extends Controller
     public function registerFarmer(RegisterFarmerRequest $request)
     {
         try {
+            event(new UserAttemptingRegsiter($request->only('phone_number', 'calling_code')));
+
             $validated = $request->validated();
 
             $userRegistered = $this->userRegisterService->registerFarmer($validated);
