@@ -26,9 +26,9 @@ class RegisterController extends Controller
         try {
             $validated = $request->validated();
 
-            $tokenData = $this->userRegisterService->registerFarmer($validated);
+            $userRegistered = $this->userRegisterService->registerFarmer($validated);
 
-            return new SuccessResponseResource('Farmer registered successfully', new TokenResponse($tokenData));
+            return new SuccessResponseResource('Farmer registered successfully', new UserResource($userRegistered));
         } catch (Exception $e) {
             return new ErrorResponseResource("Farmer registered failed: ", $e->getMessage());
         }

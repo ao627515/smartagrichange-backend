@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserAttemptingLogin;
 use App\Http\Resources\ErrorResponseResource;
 use App\Http\Resources\User\UserResource;
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Auth\AuthenticationException;
 use App\Http\Resources\SuccessResponseResource;
+use Exception;
 
 class AuthController extends Controller
 {
@@ -19,6 +21,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         try {
+            event(new UserAttemptingLogin($request->only('phone_number', 'calling_code')));
             $credentials = $request->only(['phone_number', 'password']);
             $tokenData = $this->authService->login($credentials);
             return new SuccessResponseResource('Login successful', new TokenResponse($tokenData));
@@ -26,6 +29,8 @@ class AuthController extends Controller
             return new ErrorResponseResource('Authentication failed', $e->getMessage());
         } catch (JWTException $e) {
             return new ErrorResponseResource('JWT error', $e->getMessage());
+        } catch (Exception $e) {
+            return (new ErrorResponseResource('Login failed', $e->getMessage(), $e->getCode() ?: 500));
         }
     }
 

@@ -25,7 +25,8 @@ class LoginRequest extends FormRequest
     {
         return [
             'phone_number' => 'required|string',
-            'password' => 'required|string|min:8'
+            'password' => 'required|string|min:8',
+            'calling_code' => 'required|string|exists:country_calling_codes,calling_code',
         ];
     }
 }

@@ -16,4 +16,14 @@ class UserRepository extends BaseRepository
         $this->model = $model;
         $this->roleRepository = $roleRepository;
     }
+
+    public function isPhoneNumberVerified($phoneNumber, $callingCode)
+    {
+        $user = $this->model->where('phone_number', $phoneNumber)
+            ->whereHas('countryCallingCode', function ($query) use ($callingCode) {
+                $query->where('calling_code', $callingCode);
+            })->first();
+
+        return $user->phone_number_verified_at ? true : false;
+    }
 }

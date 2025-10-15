@@ -9,15 +9,17 @@ class ErrorResponseResource extends JsonResource
 {
     protected string $message;
     protected mixed $errors;
+    protected int $statusCode;
 
     /**
      * Create a new instance of the resource with custom properties.
      */
-    public function __construct(string $message = 'Operation failed', $errors = null)
+    public function __construct(string $message = 'Operation failed', $errors = null, $statusCode = 400)
     {
         parent::__construct(null);
         $this->message = $message;
         $this->errors = $errors;
+        $this->statusCode = $statusCode;
     }
 
     /**
@@ -31,6 +33,7 @@ class ErrorResponseResource extends JsonResource
             'status' => 'failed',
             'message' => $this->message,
             'errors' => $this->errors,
+            'status_code' => $this->statusCode,
         ];
     }
 }

@@ -2,18 +2,23 @@
 
 namespace App\Services;
 
-use App\DTO\Requests\Aquilas\AquilasSendSmsRequestDto;
+use Exception;
 use App\Enums\UserRoleEnum;
-use App\Events\FarmerRegister;
 use App\Services\OtpService;
 use App\Services\BaseService;
+use App\Events\FarmerRegister;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 use App\Repositories\CountryCallingCodeRepository;
+use App\DTO\Requests\Aquilas\AquilasSendSmsRequestDto;
 
 class UserService extends BaseService
 {
+    /**
+     * Summary of repository
+     * @var UserRepository
+     */
     protected $repository;
     private $roleRepository;
     private $callingCodeRepository;
@@ -76,5 +81,15 @@ class UserService extends BaseService
         $user->save();
 
         return $user;
+    }
+
+    public function ensurePhoneNumberIsVerified($phoneNumber, $callingCode)
+    {
+        $isVerified = $this->repository->isPhoneNumberVerified($phoneNumber, $callingCode);
+        if (!$isVerified) {
+            throw new Exception("Phone number {$callingCode}{$phoneNumber} is not verified.");
+        }
+
+        return true;
     }
 }
