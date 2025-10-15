@@ -35,7 +35,11 @@ class UserOtpService extends BaseService
 
     public function getLatestOtpForUser(int $userId)
     {
-        return $this->repository->getLatestOtpForUser($userId);
+        $userOtp = $this->repository->getLatestOtpForUser($userId);
+        if (!$userOtp) {
+            throw new \Exception('No OTP found for the user');
+        }
+        return $userOtp;
     }
 
     public function incrementAttempts($id)
