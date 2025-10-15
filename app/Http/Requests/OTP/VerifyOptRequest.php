@@ -26,9 +26,7 @@ class VerifyOptRequest extends FormRequest
     {
         $user = $this->route('user');
         return [
-            'otp_code' => 'required|string|' . Rule::exists('user_otps', 'otp_code')->where(function ($query) use ($user) {
-                $query->where('user_id', $user);
-            }),
+            'otp_code' => ['required', 'string', Rule::exists('user_otps', 'otp_code')]
         ];
     }
 }
