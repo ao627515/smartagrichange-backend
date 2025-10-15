@@ -46,14 +46,23 @@ class OtpService
 
     public function resendOtp($userId)
     {
-        $user = $this->userService->findOrFail($userId);
+        $this->userService->findOrFail($userId);
 
         $lastOtp = $this->userOtpService->getLatestOtpForUser($userId);
         if ($lastOtp && !$lastOtp->is_expired) {
-            $timeSinceLastOtp = now()->diffInMinutes($lastOtp->created_at);
-            if ($timeSinceLastOtp < $this->resendInterval) {
-                // throw new Exception('Please wait before requesting a new OTP');
-                return;
+            $timeSinceLastOtp = now()->diffInSeconds($lastOtp->created_at);
+
+            if ($timeSinceLastOtp < $this->resendInterval * 60) {
+                $secondsLeft = $this->resendInterval * 60 - $timeSinceLastOtp;
+
+                if ($secondsLeft < 60) {
+                    $message = "Please wait {$secondsLeft} second" . ($secondsLeft > 1 ? 's' : '') . " before requesting a new OTP";
+                } else {
+                    $minutesLeft = ceil($secondsLeft / 60);
+                    $message = "Please wait {$minutesLeft} minute" . ($minutesLeft > 1 ? 's' : '') . " before requesting a new OTP";
+                }
+
+                throw new Exception($message);
             }
         }
 
