@@ -32,6 +32,11 @@ abstract class BaseRepository
         return $this->model->all($columns);
     }
 
+    public function allOrdered($orderBy = 'id', $direction = 'asc', $columns = ['*'])
+    {
+        return $this->model->orderBy($orderBy, $direction)->get($columns);
+    }
+
     /**
      * Récupère tous les enregistrements avec pagination.
      *
