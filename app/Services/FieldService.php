@@ -45,4 +45,10 @@ class FieldService extends BaseService
         }
         return $this->repository->delete($id);
     }
+
+    public function getParcels($fieldId)
+    {
+        $field = $this->findOrFail($fieldId);
+        return $field->parcels()->orderBy('created_at', 'desc')->get();
+    }
 }

@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Field\FieldStoreRequest;
 use App\Http\Requests\Field\FieldUpdateRequest;
 use App\Http\Resources\Field\FieldResource;
+use App\Http\Resources\Parcel\ParcelResource;
 use App\Http\Resources\SuccessResponseResource;
 use App\Models\Field;
+use App\Models\Parcel;
 use App\Services\FieldService;
 use Illuminate\Http\Request;
 
@@ -86,6 +88,17 @@ class FieldController extends Controller
         return $this->handleRequestException(function () use ($field) {
             $this->fieldService->delete($field->id);
             return new SuccessResponseResource('Field deleted successfully');
+        });
+    }
+
+    public function getParcels($field)
+    {
+        return $this->handleRequestException(function () use ($field) {
+            $parcels = $this->fieldService->getParcels($field);
+            return new SuccessResponseResource(
+                'Parcels retrieved successfully',
+                ParcelResource::collection($parcels)
+            );
         });
     }
 }

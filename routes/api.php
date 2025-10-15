@@ -33,5 +33,6 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('fields', FieldController::class);
+    Route::get('fields/{field}/parcels', [FieldController::class, 'getParcels']);
     Route::apiResource('parcels', ParcelController::class);
 });
