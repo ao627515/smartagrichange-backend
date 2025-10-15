@@ -28,9 +28,11 @@ class CheckPhoneNumberBeforeRegistration
         $phoneNumber = $data['phone_number'] ?? null;
         $callingCode = $data['calling_code'] ?? null;
         if ($phoneNumber && $callingCode) {
-            $bool =  $this->userService->isPhoneNumberVerified($phoneNumber, $callingCode);
-            if ($bool) {
-                throw new InvalidArgumentException('User with this phone number already exists.');
+            if ($this->userService->phoneNumberExists($phoneNumber, $callingCode)) {
+                $bool =  $this->userService->isPhoneNumberVerified($phoneNumber, $callingCode);
+                if ($bool) {
+                    throw new InvalidArgumentException('User with this phone number already exists.');
+                }
             }
         } else {
             // Optionally, you can throw an exception or handle the missing data case
