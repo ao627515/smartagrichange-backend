@@ -1,12 +1,13 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Resources\SuccessResponseResource;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\ParcelController;
 use App\Http\Controllers\UserOtpController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Resources\SuccessResponseResource;
+use App\Http\Controllers\FarmerProfileController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -16,6 +17,11 @@ Route::prefix('users')->group(function () {
     Route::post('/farmers/register', [RegisterController::class, 'registerFarmer']);
     Route::post('/{user}/verify-otp', [UserOtpController::class, 'verifyOtp']);
     Route::post('/{user}/resend-otp', [UserOtpController::class, 'resendOtp']);
+
+    Route::middleware('auth:api')->group(function () {
+
+        Route::apiSingleton('farmers.profile', FarmerProfileController::class);
+    });
 });
 
 Route::prefix('auth')->group(function () {

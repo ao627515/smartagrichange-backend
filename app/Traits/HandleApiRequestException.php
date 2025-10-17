@@ -3,12 +3,13 @@
 namespace App\Traits;
 
 use App\Http\Resources\ErrorResponseResource;
+use App\Http\Resources\SuccessResponseResource;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
 trait HandleApiRequestException
 {
-    public function handleRequestException($callable)
+    public function handleRequestException($callable): SuccessResponseResource|ErrorResponseResource
     {
         try {
             return $callable();
