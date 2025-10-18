@@ -145,6 +145,29 @@ POST /api/users/{user}/resend-otp
 
 -   200 Success : OTP renvoyé
 
+POST /api/users/{user}/change-password (protected)
+
+Description : change le mot de passe d'un utilisateur. Utilise le DTO `ChangePasswordData` pour la validation.
+
+Body (application/json) — schéma (`app/DTO/Data/ChangePasswordData.php`):
+
+{
+"current_password": "string",
+"new_password": "string",
+"new_password_confirmation": "string" // implicitement géré par l'attribut Confirmed sur new_password
+}
+
+Règles importantes :
+
+-   `new_password` : min 8 caractères ; doit être confirmé (champ `new_password_confirmation`).
+-   Requête protégée : header Authorization required (Bearer token).
+
+Réponses :
+
+-   200 Success : Password changed successfully
+-   422 Validation error : mot de passe actuel incorrect / confirmation invalide
+-   401 Unauthorized : token manquant ou invalide
+
 GET /api/users/farmers/{farmer}/profile (protected)
 
 GET /api/users/farmers/{farmer}/profile (protected) — show
