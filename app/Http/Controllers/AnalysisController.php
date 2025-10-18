@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\Responses\AnalysisResponse;
 use Illuminate\Http\Request;
 use App\Services\AnalysisService;
 use App\Http\Resources\ErrorResponseResource;
@@ -26,7 +27,7 @@ class AnalysisController extends Controller
             $analysesArray = $analyses->toArray();
             return new SuccessResponseResource(
                 'Analyses retrieved successfully.',
-                AnalysisCollection::make($analyses)
+                AnalysisCollection::make(AnalysisResponse::collect($analyses))
             );
         });
     }
@@ -38,7 +39,8 @@ class AnalysisController extends Controller
             $analyses = $this->analysisService->getByUserWithRelations($user->id, ['analyzable']);
             return new SuccessResponseResource(
                 'User analyses retrieved successfully.',
-                AnalysisCollection::collection($analyses)
+                AnalysisCollection::make(AnalysisResponse::collect($analyses))
+
             );
         });
     }
@@ -60,7 +62,7 @@ class AnalysisController extends Controller
             $analysisModel = $this->analysisService->findOrFail($analysis);
             return new SuccessResponseResource(
                 'Analysis retrieved successfully.',
-                new AnalysisResource($analysisModel)
+                new AnalysisResource(AnalysisResponse::fromModel($analysisModel))
             );
         });
     }
