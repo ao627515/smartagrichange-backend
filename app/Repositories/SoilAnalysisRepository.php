@@ -23,4 +23,9 @@ class SoilAnalysisRepository extends BaseRepository
         $model->analysis()->create($data);
         return $model->refresh()->load('analysis');
     }
+
+    public function allOrderedWithRelations($orderBy = 'id', $direction = 'asc', $columns = ['*'], $relations = [])
+    {
+        return $this->model->with($relations)->orderBy($orderBy, $direction)->get($columns);
+    }
 }

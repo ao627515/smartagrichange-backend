@@ -20,7 +20,16 @@ class SoilAnalysisController extends Controller
      */
     public function index()
     {
-        //
+        return $this->handleRequestException(function () {
+            $res = $this->soilAnalysisService->allOrderedWithRelations(relations: ['analysis']);
+            return new SuccessResponseResource(
+                message: 'Soil analyses retrieved successfully',
+                data: array_map(
+                    fn($item) => StoreSoilAnalysisResponse::fromModel($item),
+                    $res->all()
+                )
+            );
+        });
     }
 
     /**
@@ -41,9 +50,15 @@ class SoilAnalysisController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(SoilAnalysis $soilAnalysis)
+    public function show($soil_analysis)
     {
-        //
+        return $this->handleRequestException(function () use ($soil_analysis) {
+            $res = $this->soilAnalysisService->findOrFailWithAnalysis($soil_analysis);
+            return new SuccessResponseResource(
+                message: 'Soil analysis retrieved successfully',
+                data: StoreSoilAnalysisResponse::fromModel($res)
+            );
+        });
     }
 
     /**

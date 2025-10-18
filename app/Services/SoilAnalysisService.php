@@ -9,6 +9,7 @@ use App\Events\SoilAnalysisCreated;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\SoilAnalysisRepository;
 use App\DTO\Responses\StoreSoilAnalysisResponse;
+use App\Models\SoilAnalysis;
 
 class SoilAnalysisService extends BaseService
 {
@@ -46,5 +47,15 @@ class SoilAnalysisService extends BaseService
             // Recharge le modèle avec la relation analysis
             return $record->fresh();
         });
+    }
+
+    public function findOrFailWithAnalysis($id, $columns = ['*']): SoilAnalysis
+    {
+        return $this->repository->findOrFail($id, $columns)->load('analysis');
+    }
+
+    public function allOrderedWithRelations($orderBy = 'id', $direction = 'asc', $columns = ['*'], $relations = [])
+    {
+        return $this->repository->allOrderedWithRelations($orderBy, $direction, $columns, $relations);
     }
 }

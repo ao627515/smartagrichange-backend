@@ -62,7 +62,7 @@ abstract class BaseRepository
     }
 
 
-    public function findOrFail($id, $columns = ['*'])
+    public function findOrFail($id, $columns = ['*']): Model
     {
         return $this->model->findOrFail($id, $columns);
     }
