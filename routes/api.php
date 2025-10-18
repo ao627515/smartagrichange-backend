@@ -7,6 +7,7 @@ use App\Http\Controllers\ParcelController;
 use App\Http\Controllers\UserOtpController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Resources\SuccessResponseResource;
+use App\Http\Controllers\SoilAnalysisController;
 use App\Http\Controllers\FarmerProfileController;
 
 // Route::get('/user', function (Request $request) {
@@ -42,4 +43,5 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('fields', FieldController::class);
     Route::get('fields/{field}/parcels', [FieldController::class, 'getParcels']);
     Route::apiResource('parcels', ParcelController::class);
+    Route::apiResource('soil-analyses', SoilAnalysisController::class);
 });

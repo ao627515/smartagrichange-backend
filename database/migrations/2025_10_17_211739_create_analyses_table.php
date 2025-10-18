@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('analyses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('parcel_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('parcel_id')->nullable()->constrained()->onDelete('cascade');
             $table->morphs('analyzable');
             $table->timestamps();
         });
