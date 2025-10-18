@@ -43,6 +43,6 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('fields', FieldController::class);
     Route::get('fields/{field}/parcels', [FieldController::class, 'getParcels']);
     Route::apiResource('parcels', ParcelController::class);
-    Route::apiResource('soil-analyses', SoilAnalysisController::class);
+    Route::apiResource('soil-analyses', SoilAnalysisController::class)->except('update');
     Route::get('users/{user}/soil-analyses', [SoilAnalysisController::class, 'userAnalyses']);
 });

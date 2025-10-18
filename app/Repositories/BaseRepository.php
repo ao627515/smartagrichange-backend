@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 abstract class BaseRepository
 {
@@ -64,7 +65,10 @@ abstract class BaseRepository
 
     public function findOrFail($id, $columns = ['*']): Model
     {
-        return $this->model->findOrFail($id, $columns);
+        if (!$model = $this->model->find($id, $columns)) {
+            throw new ModelNotFoundException("Model not found.");
+        }
+        return $model;
     }
 
     public function findBy($field, $value, $columns = ['*'])

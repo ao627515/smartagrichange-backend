@@ -86,8 +86,14 @@ class SoilAnalysisController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(SoilAnalysis $soilAnalysis)
+    public function destroy($soil_analysis)
     {
-        //
+        return $this->handleRequestException(function () use ($soil_analysis) {
+            $this->soilAnalysisService->delete($soil_analysis);
+            return new SuccessResponseResource(
+                message: 'Soil analysis deleted successfully',
+                data: null
+            );
+        });
     }
 }
