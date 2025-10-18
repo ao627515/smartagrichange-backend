@@ -32,6 +32,20 @@ class SoilAnalysisController extends Controller
         });
     }
 
+    public function userAnalyses($user)
+    {
+        return $this->handleRequestException(function () use ($user) {
+            $res = $this->soilAnalysisService->userAnalysesLatest($user);
+            return new SuccessResponseResource(
+                message: 'Soil analyses retrieved successfully',
+                data: array_map(
+                    fn($item) => StoreSoilAnalysisResponse::fromModel($item),
+                    $res->all()
+                )
+            );
+        });
+    }
+
     /**
      * Store a newly created resource in storage.
      */

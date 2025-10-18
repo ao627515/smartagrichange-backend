@@ -58,4 +58,9 @@ class SoilAnalysisService extends BaseService
     {
         return $this->repository->allOrderedWithRelations($orderBy, $direction, $columns, $relations);
     }
+
+    public function userAnalysesLatest($userId, $columns = ['*'])
+    {
+        return $this->repository->userAnalysesLatest($userId, $columns);
+    }
 }

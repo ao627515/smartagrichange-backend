@@ -44,4 +44,5 @@ Route::middleware('auth:api')->group(function () {
     Route::get('fields/{field}/parcels', [FieldController::class, 'getParcels']);
     Route::apiResource('parcels', ParcelController::class);
     Route::apiResource('soil-analyses', SoilAnalysisController::class);
+    Route::get('users/{user}/soil-analyses', [SoilAnalysisController::class, 'userAnalyses']);
 });

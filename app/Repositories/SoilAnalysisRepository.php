@@ -28,4 +28,10 @@ class SoilAnalysisRepository extends BaseRepository
     {
         return $this->model->with($relations)->orderBy($orderBy, $direction)->get($columns);
     }
+    public function userAnalysesLatest($userId, $columns = ['*'])
+    {
+        return $this->model->whereHas('analysis', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->latest()->get($columns);
+    }
 }
