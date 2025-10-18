@@ -112,4 +112,18 @@ class UserService extends BaseService
     {
         return $this->repository->findUserByPhoneNumberAndCallingCode($phoneNumber, $callingCode, $columns);
     }
+
+    public function changePassword(string $userId, array $data)
+    {
+        $user = $this->repository->findOrFail($userId);
+
+        if (!Hash::check($data['current_password'], $user->password)) {
+            throw new Exception('Current password is incorrect.');
+        }
+
+        $user->password = Hash::make($data['new_password']);
+        $user->save();
+
+        return $user;
+    }
 }
