@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\DTO\Data\CropRecommandedData;
 use App\Services\SoilAnalysisService;
 use App\Http\Resources\SuccessResponseResource;
-use App\DTO\Responses\StoreSoilAnalysisResponse;
+use App\DTO\Responses\SoilAnalysisResponse;
 use App\DTO\Requests\StoreSoilAnalysisRequestDto;
 
 class SoilAnalysisController extends Controller
@@ -25,7 +25,7 @@ class SoilAnalysisController extends Controller
             return new SuccessResponseResource(
                 message: 'Soil analyses retrieved successfully',
                 data: array_map(
-                    fn($item) => StoreSoilAnalysisResponse::fromModel($item),
+                    fn($item) => SoilAnalysisResponse::fromModel($item),
                     $res->all()
                 )
             );
@@ -39,7 +39,7 @@ class SoilAnalysisController extends Controller
             return new SuccessResponseResource(
                 message: 'Soil analyses retrieved successfully',
                 data: array_map(
-                    fn($item) => StoreSoilAnalysisResponse::fromModel($item),
+                    fn($item) => SoilAnalysisResponse::fromModel($item),
                     $res->all()
                 )
             );
@@ -56,7 +56,7 @@ class SoilAnalysisController extends Controller
             $res = $this->soilAnalysisService->create($data);
             return new SuccessResponseResource(
                 message: 'Soil analysis created successfully',
-                data: StoreSoilAnalysisResponse::fromModel($res)
+                data: SoilAnalysisResponse::fromModel($res)
             );
         });
     }
@@ -70,7 +70,7 @@ class SoilAnalysisController extends Controller
             $res = $this->soilAnalysisService->findOrFailWithAnalysis($soil_analysis);
             return new SuccessResponseResource(
                 message: 'Soil analysis retrieved successfully',
-                data: StoreSoilAnalysisResponse::fromModel($res)
+                data: SoilAnalysisResponse::fromModel($res)
             );
         });
     }

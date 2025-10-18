@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\ParcelController;
 use App\Http\Controllers\UserOtpController;
+use App\Http\Controllers\AnalysisController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\NewPasswordController;
 use App\Http\Resources\SuccessResponseResource;
@@ -47,4 +48,5 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('soil-analyses', SoilAnalysisController::class)->except('update');
     Route::get('users/{user}/soil-analyses', [SoilAnalysisController::class, 'userAnalyses']);
     Route::post('users/{user}/change-password', [NewPasswordController::class, 'changeUserPassword']);
+    Route::apiResource('analyses', AnalysisController::class)->except('update');
 });

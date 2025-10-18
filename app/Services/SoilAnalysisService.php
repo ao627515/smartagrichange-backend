@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Events\SoilAnalysisCreated;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\SoilAnalysisRepository;
-use App\DTO\Responses\StoreSoilAnalysisResponse;
+use App\DTO\Responses\SoilAnalysisResponse;
 use App\Models\SoilAnalysis;
 
 class SoilAnalysisService extends BaseService

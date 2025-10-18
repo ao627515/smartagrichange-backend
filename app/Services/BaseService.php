@@ -34,6 +34,7 @@ abstract class BaseService
         return $this->repository->all($columns);
     }
 
+
     public function allOrdered($orderBy = 'id', $direction = 'asc', $columns = ['*'])
     {
         return $this->repository->allOrdered($orderBy, $direction, $columns);

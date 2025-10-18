@@ -7,7 +7,7 @@ use App\DTO\Data\SensorData;
 use App\Models\SoilAnalysis;
 use Spatie\LaravelData\Data;
 
-class StoreSoilAnalysisResponse extends Data
+class SoilAnalysisResponse extends Data
 {
     /**
      * Summary of __construct
