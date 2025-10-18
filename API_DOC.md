@@ -14,68 +14,339 @@ http://localhost:8000/api
 
 Toutes les réponses de l'API suivent un format standardisé :
 
-**Réponse de succès:**
+## Documentation API SmartAgriChange Backend
 
-```json
-{
+Vue d'ensemble
+
+L'API SmartAgriChange Backend est une API RESTful construite avec Laravel (version indiquée dans le projet). Elle gère les utilisateurs (agriculteurs), l'authentification JWT, les champs, les parcelles et les analyses de sol.
+
+URL de base
+
+http://localhost:8000/api
+
+Format de réponse
+
+Toutes les réponses suivent un format standardisé :
+
+-   Succès :
+
+    {
     "status": "success",
     "message": "Message descriptif",
-    "data": {
-        // Données de la réponse
+    "data": { ... }
     }
-}
-```
 
-**Réponse d'erreur:**
+-   Erreur :
 
-```json
-{
+    {
     "status": "error",
     "message": "Message d'erreur",
-    "errors": {
-        // Détails des erreurs
+    "errors": { ... }
     }
-}
-```
 
-### Authentification
+Authentification
 
-L'API utilise JWT (JSON Web Tokens) pour l'authentification. Incluez le token dans l'en-tête Authorization :
+L'API utilise JWT (tymon/jwt-auth). Ajouter l'en-tête :
 
-```text
-Authorization: Bearer {votre_jwt_token}
-```
+Authorization: Bearer {jwt_token}
 
-**Routes protégées par authentification JWT** :
-
--   Toutes les routes sous `/api/auth/*` (sauf `/api/auth/login`)
--   Toutes les routes de gestion des champs `/api/fields/*`
--   Toutes les routes de gestion des parcelles `/api/parcels/*`
+Routes protégées : la majorité des routes de type write/list sont protégées par le middleware `auth:api` (cf. routes listées plus bas).
 
 ---
 
-## Endpoints de l'API
+## Table des matières
 
-### 1. Authentification
+1. Auth (login / logout / refresh / me)
+2. Utilisateurs & OTP (inscription agriculteur, verify/resend OTP, profil)
+3. Fields (champs) - CRUD + listing des parcelles
+4. Parcels (parcelles) - CRUD
+5. Soil analyses - CRUD (except update) + listing par utilisateur
+6. Modèles de données utiles (DTOs)
+7. Codes HTTP et erreurs
+8. Exemples d'utilisation
 
-#### 1.1 Inscription d'un Agriculteur
+---
 
-**POST** `/api/users/farmers/register`
+## 1. Auth
 
-Crée un nouveau compte agriculteur dans le système et retourne un token JWT.
+POST /api/auth/login
 
-**Corps de la requête:**
+Description : authentifie un utilisateur (phone_number + password) et renvoie un token.
 
-```json
+Body (application/json):
+
 {
-    "lastname": "Dupont",
-    "firstname": "Jean",
-    "phone_number": "123456789",
-    "password": "motdepasse123",
-    "password_confirmation": "motdepasse123",
-    "calling_code": "+33"
+"phone_number": "string",
+"password": "string"
 }
-```
+
+Réponses :
+
+-   200 Success : token + user
+-   401 Unauthorized : identifiants invalides
+-   422 Validation error
+
+POST /api/auth/logout (protected)
+
+Description : révoque le token de l'utilisateur authentifié.
+
+Réponse : 200 Success
+
+POST /api/auth/refresh (protected)
+
+Description : actualise le token JWT.
+
+Réponse : 200 Success (nouveau token)
+
+GET /api/auth/me (protected)
+
+Description : récupère les informations de l'utilisateur courant.
+
+Réponse : 200 Success (user)
+
+---
+
+## 2. Utilisateurs & OTP
+
+POST /api/users/farmers/register
+
+Description : inscription d'un agriculteur. Utilise le Form Request `RegisterFarmerRequest` pour la validation côté serveur.
+
+Body (application/json) — champs usuels (selon `RegisterFarmerRequest`):
+
+{
+"lastname": "string",
+"firstname": "string",
+"phone_number": "string",
+"password": "string",
+"password_confirmation": "string",
+"calling_code": "+33"
+}
+
+Réponses :
+
+-   201 Success : utilisateur créé (UserResource)
+-   422 Validation error
+
+POST /api/users/{user}/verify-otp
+
+Body:
+
+{
+"otp_code": "123456"
+}
+
+Réponses :
+
+-   200 Success (message OTP verified successfully ou OTP verification failed)
+-   422 Validation error
+
+POST /api/users/{user}/resend-otp
+
+-   200 Success : OTP renvoyé
+
+GET /api/users/farmers/{farmer}/profile (protected)
+
+GET /api/users/farmers/{farmer}/profile (protected) — show
+
+PUT/PATCH /api/users/farmers/{farmer}/profile (protected) — update
+
+Ces endpoints utilisent `FarmerProfileController` et renvoient `UserResource`.
+
+---
+
+## 3. Fields (Champs)
+
+Toutes les routes sont protégées (middleware `auth:api`).
+
+GET /api/fields
+
+Description : liste les champs de l'utilisateur (triés par date de création décroissante).
+
+Réponse : 200 Success (array of Field)
+
+POST /api/fields
+
+Body (application/json):
+
+{
+"name": "string",
+"location": "string"
+}
+
+Réponse : 201 Created (Field)
+
+GET /api/fields/{field}
+
+PUT/PATCH /api/fields/{field}
+
+DELETE /api/fields/{field}
+
+GET /api/fields/{field}/parcels
+
+Description : retourne toutes les parcelles associées au champ.
+
+Réponse : 200 Success (array of Parcel)
+
+---
+
+## 4. Parcels (Parcelles)
+
+Toutes protégées par `auth:api`.
+
+GET /api/parcels
+
+POST /api/parcels
+
+Body : { "field_id": integer }
+
+GET /api/parcels/{parcel}
+
+PUT/PATCH /api/parcels/{parcel}
+
+DELETE /api/parcels/{parcel}
+
+---
+
+## 5. Soil analyses
+
+Ces routes sont déclarées via `Route::apiResource('soil-analyses', SoilAnalysisController::class)->except('update')` et `GET /api/users/{user}/soil-analyses`.
+
+GET /api/soil-analyses
+
+Description : retourne toutes les analyses de sol (transformées via StoreSoilAnalysisResponse DTO).
+
+GET /api/soil-analyses/{soil_analysis}
+
+POST /api/soil-analyses
+
+Description : création d'une analyse de sol. Les données sont validées et transformées via `StoreSoilAnalysisRequestDto`.
+
+Body (application/json) — schéma (DTO `StoreSoilAnalysisRequestDto`):
+
+{
+"temperature": float,
+"humidity": float,
+"ph": float,
+"ec": float,
+"n": float,
+"p": float,
+"k": float,
+"sensor_model": "string|null",
+"parcel_id": integer|null
+}
+
+Réponses :
+
+-   201 Created : `StoreSoilAnalysisResponse` (format DTO -> Resource)
+-   422 Validation error
+
+DELETE /api/soil-analyses/{soil_analysis}
+
+GET /api/users/{user}/soil-analyses (protected)
+
+Description : récupère les analyses récentes d'un utilisateur (userAnalyses).
+
+---
+
+## 6. Modèles / DTO utiles
+
+StoreSoilAnalysisRequestDto (app/DTO/Requests/StoreSoilAnalysisRequestDto.php)
+
+{
+temperature: float,
+humidity: float,
+ph: float,
+ec: float,
+n: float,
+p: float,
+k: float,
+sensor_model: string|null,
+parcel_id: int|null
+}
+
+StoreSoilAnalysisResponse (DTO utilisé en sortie) — généré depuis les modèles, vérifier `app/DTO/Responses/StoreSoilAnalysisResponse.php` pour le format exact.
+
+UserResource (app/Http/Resources/User/UserResource)
+Field model/resource
+Parcel model/resource
+
+---
+
+## 7. Codes de statut HTTP
+
+200 OK — Requête réussie
+201 Created — Ressource créée
+400 Bad Request — Requête mal formée
+401 Unauthorized — Authentification requise
+403 Forbidden — Accès interdit
+404 Not Found — Ressource non trouvée
+422 Unprocessable Entity — Erreur de validation
+500 Internal Server Error — Erreur serveur
+
+---
+
+## 8. Exemples d'utilisation (curl)
+
+# Inscription agriculteur
+
+curl -X POST http://localhost:8000/api/users/farmers/register \
+ -H "Content-Type: application/json" \
+ -d '{"lastname":"Martin","firstname":"Pierre","phone_number":"0123456789","password":"motdepasse123","password_confirmation":"motdepasse123","calling_code":"+33"}'
+
+# Login
+
+curl -X POST http://localhost:8000/api/auth/login \
+ -H "Content-Type: application/json" \
+ -d '{"phone_number":"0123456789","password":"motdepasse123"}'
+
+# Créer une analysis de sol (exemple)
+
+curl -X POST http://localhost:8000/api/soil-analyses \
+ -H "Content-Type: application/json" \
+ -H "Authorization: Bearer {jwt_token}" \
+ -d '{"temperature":25.3,"humidity":45.2,"ph":6.5,"ec":1.2,"n":0.5,"p":0.3,"k":0.4,"sensor_model":"XYZ-100","parcel_id":1}'
+
+---
+
+## Routes (extraites de `routes/api.php`)
+
+-   POST /api/users/farmers/register -> RegisterController@registerFarmer
+-   POST /api/users/{user}/verify-otp -> UserOtpController@verifyOtp
+-   POST /api/users/{user}/resend-otp -> UserOtpController@resendOtp
+-   POST /api/auth/login -> AuthController@login
+-   POST /api/auth/logout -> AuthController@logout (protected)
+-   POST /api/auth/refresh -> AuthController@refresh (protected)
+-   GET /api/auth/me -> AuthController@me (protected)
+-   GET /api/fields -> FieldController@index (protected)
+-   POST /api/fields -> FieldController@store (protected)
+-   GET /api/fields/{field} -> FieldController@show (protected)
+-   PUT/PATCH /api/fields/{field} -> FieldController@update (protected)
+-   DELETE /api/fields/{field} -> FieldController@destroy (protected)
+-   GET /api/fields/{field}/parcels -> FieldController@getParcels (protected)
+-   GET /api/parcels -> ParcelController@index (protected)
+-   POST /api/parcels -> ParcelController@store (protected)
+-   GET /api/parcels/{parcel} -> ParcelController@show (protected)
+-   PUT/PATCH /api/parcels/{parcel} -> ParcelController@update (protected)
+-   DELETE /api/parcels/{parcel} -> ParcelController@destroy (protected)
+-   GET /api/soil-analyses -> SoilAnalysisController@index (protected)
+-   POST /api/soil-analyses -> SoilAnalysisController@store (protected)
+-   GET /api/soil-analyses/{soil_analysis} -> SoilAnalysisController@show (protected)
+-   DELETE /api/soil-analyses/{soil_analysis} -> SoilAnalysisController@destroy (protected)
+-   GET /api/users/{user}/soil-analyses -> SoilAnalysisController@userAnalyses (protected)
+
+---
+
+Notes et améliorations suggérées
+
+-   Ajouter la pagination pour les endpoints de listing
+-   Ajouter un OpenAPI/Swagger pour documentation interactive
+-   Tests unitaires et d'intégration pour les controllers/services
+-   Ajouter rate-limiting et politiques CORS si nécessaire
+
+---
+
+Dernière mise à jour: 18 octobre 2025
 
 **Paramètres:**
 
