@@ -233,694 +233,325 @@ DELETE /api/parcels/{parcel}
 
 ## 5. Soil analyses
 
-Ces routes sont déclarées via `Route::apiResource('soil-analyses', SoilAnalysisController::class)->except('update')` et `GET /api/users/{user}/soil-analyses`.
+# SmartAgriChange — Documentation API (épurée)
 
-GET /api/soil-analyses
+Base URL
 
-Description : retourne toutes les analyses de sol (transformées via StoreSoilAnalysisResponse DTO).
+http://localhost:8000/api
 
-GET /api/soil-analyses/{soil_analysis}
+Authentification
 
-POST /api/soil-analyses
+-   Méthode : JWT (tymon/jwt-auth)
+-   En-tête requis pour routes protégées : Authorization: Bearer {token}
 
-Description : création d'une analyse de sol. Les données sont validées et transformées via `StoreSoilAnalysisRequestDto`.
+Format de réponse (standard)
 
-Body (application/json) — schéma (DTO `StoreSoilAnalysisRequestDto`):
-
-{
-"temperature": float,
-"humidity": float,
-"ph": float,
-"ec": float,
-"n": float,
-"p": float,
-"k": float,
-"sensor_model": "string|null",
-"parcel_id": integer|null
-}
-
-Réponses :
-
--   201 Created : `StoreSoilAnalysisResponse` (format DTO -> Resource)
--   422 Validation error
-
-DELETE /api/soil-analyses/{soil_analysis}
-
-GET /api/users/{user}/soil-analyses (protected)
-
-Description : récupère les analyses récentes d'un utilisateur (userAnalyses).
-
----
-
-## 6. Modèles / DTO utiles
-
-StoreSoilAnalysisRequestDto (app/DTO/Requests/StoreSoilAnalysisRequestDto.php)
+Succès
 
 {
-temperature: float,
-humidity: float,
-ph: float,
-ec: float,
-n: float,
-p: float,
-k: float,
-sensor_model: string|null,
-parcel_id: int|null
+"status": "success",
+"message": "Message descriptif",
+"data": ...
 }
 
-StoreSoilAnalysisResponse (DTO utilisé en sortie) — généré depuis les modèles, vérifier `app/DTO/Responses/StoreSoilAnalysisResponse.php` pour le format exact.
+Erreur
 
-UserResource (app/Http/Resources/User/UserResource)
-Field model/resource
-Parcel model/resource
+{
+"status": "error",
+"message": "Message d'erreur",
+"errors": ...
+}
 
----
-
-## 7. Codes de statut HTTP
-
-200 OK — Requête réussie
-201 Created — Ressource créée
-400 Bad Request — Requête mal formée
-401 Unauthorized — Authentification requise
-403 Forbidden — Accès interdit
-404 Not Found — Ressource non trouvée
-422 Unprocessable Entity — Erreur de validation
-500 Internal Server Error — Erreur serveur
+Raccourci : pour chaque endpoint ci‑dessous — méthode, URI, paramètres (path / query / body), sample request, sample response (structure). Seules les informations nécessaires sont conservées.
 
 ---
 
-## 8. Exemples d'utilisation (curl)
+## Auth
 
-# Inscription agriculteur
+### POST /api/auth/login
 
-curl -X POST http://localhost:8000/api/users/farmers/register \
- -H "Content-Type: application/json" \
- -d '{"lastname":"Martin","firstname":"Pierre","phone_number":"0123456789","password":"motdepasse123","password_confirmation":"motdepasse123","calling_code":"+33"}'
+-   Description : authentification (phone_number + password)
+-   Body (application/json):
+    -   phone_number (string) - requis
+    -   password (string) - requis
+-   Succès (200) : token + user
+    -   data: { access_token, token_type, expires_in, user }
+-   Erreurs typiques : 401, 422
 
-# Login
+Exemple request body:
+{
+"phone_number": "123456789",
+"password": "motdepasse123"
+}
 
-curl -X POST http://localhost:8000/api/auth/login \
- -H "Content-Type: application/json" \
- -d '{"phone_number":"0123456789","password":"motdepasse123"}'
+Exemple response (200):
+{
+"status":"success",
+"message":"Login successful",
+"data":{
+"access_token":"...",
+"token_type":"bearer",
+"expires_in":3600,
+"user":{ /_ user object _/ }
+}
+}
 
-# Créer une analysis de sol (exemple)
+### POST /api/auth/logout (protected)
 
-curl -X POST http://localhost:8000/api/soil-analyses \
- -H "Content-Type: application/json" \
- -H "Authorization: Bearer {jwt_token}" \
- -d '{"temperature":25.3,"humidity":45.2,"ph":6.5,"ec":1.2,"n":0.5,"p":0.3,"k":0.4,"sensor_model":"XYZ-100","parcel_id":1}'
+-   Description : révoque le token
+-   Réponse (200): { status: success, message: "Logout successful", data: null }
 
----
+### POST /api/auth/refresh (protected)
 
-## Routes (extraites de `routes/api.php`)
+-   Description : rafraîchit le token
+-   Succès (200) : nouveau token (même structure que login)
 
--   POST /api/users/farmers/register -> RegisterController@registerFarmer
--   POST /api/users/{user}/verify-otp -> UserOtpController@verifyOtp
--   POST /api/users/{user}/resend-otp -> UserOtpController@resendOtp
--   POST /api/auth/login -> AuthController@login
--   POST /api/auth/logout -> AuthController@logout (protected)
--   POST /api/auth/refresh -> AuthController@refresh (protected)
--   GET /api/auth/me -> AuthController@me (protected)
--   GET /api/fields -> FieldController@index (protected)
--   POST /api/fields -> FieldController@store (protected)
--   GET /api/fields/{field} -> FieldController@show (protected)
--   PUT/PATCH /api/fields/{field} -> FieldController@update (protected)
--   DELETE /api/fields/{field} -> FieldController@destroy (protected)
--   GET /api/fields/{field}/parcels -> FieldController@getParcels (protected)
--   GET /api/parcels -> ParcelController@index (protected)
--   POST /api/parcels -> ParcelController@store (protected)
--   GET /api/parcels/{parcel} -> ParcelController@show (protected)
--   PUT/PATCH /api/parcels/{parcel} -> ParcelController@update (protected)
--   DELETE /api/parcels/{parcel} -> ParcelController@destroy (protected)
--   GET /api/soil-analyses -> SoilAnalysisController@index (protected)
--   POST /api/soil-analyses -> SoilAnalysisController@store (protected)
--   GET /api/soil-analyses/{soil_analysis} -> SoilAnalysisController@show (protected)
--   DELETE /api/soil-analyses/{soil_analysis} -> SoilAnalysisController@destroy (protected)
--   GET /api/users/{user}/soil-analyses -> SoilAnalysisController@userAnalyses (protected)
+### GET /api/auth/me (protected)
+
+-   Description : renvoie le user courant
+-   Succès (200) : data = User resource
 
 ---
 
-Notes et améliorations suggérées
+## Utilisateurs & OTP
 
--   Ajouter la pagination pour les endpoints de listing
--   Ajouter un OpenAPI/Swagger pour documentation interactive
--   Tests unitaires et d'intégration pour les controllers/services
--   Ajouter rate-limiting et politiques CORS si nécessaire
+### POST /api/users/farmers/register
+
+-   Description : crée un agriculteur
+-   Body (application/json):
+    -   lastname (string) - requis
+    -   firstname (string) - requis
+    -   phone_number (string) - requis, unique
+    -   password (string) - requis
+    -   password_confirmation (string) - requis
+    -   calling_code (string) - optionnel
+-   Succès (201) : user resource (data)
+-   Erreurs : 422
+
+Exemple minimal body:
+{
+"lastname":"Martin",
+"firstname":"Pierre",
+"phone_number":"0123456789",
+"password":"motdepasse123",
+"password_confirmation":"motdepasse123",
+"calling_code":"+33"
+}
+
+### POST /api/users/{user}/verify-otp
+
+-   Description : vérifie le code OTP pour l'utilisateur {user}
+-   Path: user (int)
+-   Body: { otp_code: string }
+-   Réponse (200) : message (success même en cas d'échec de vérification)
+-   Erreurs : 422, 500
+
+### POST /api/users/{user}/resend-otp
+
+-   Description : renvoie un OTP
+-   Path: user (int)
+-   Réponse (200) : { status: success, message: "OTP resent successfully" }
+
+### POST /api/users/{user}/change-password (protected)
+
+-   Description : change le mot de passe d'un utilisateur
+-   Body:
+    -   current_password (string) - requis
+    -   new_password (string) - requis, min:8
+    -   new_password_confirmation (string) - requis
+-   Réponses : 200, 422, 401
+
+### GET /api/users/farmers/{farmer}/profile (protected)
+
+-   GET: récupère le profil
+-   PUT/PATCH: met à jour le profil
+-   Body pour update : (lastname, firstname, calling_code, etc.) — voir `app/Http/Requests` pour règles exactes
+
+---
+
+## Fields (champs) — protected
+
+### GET /api/fields
+
+-   Liste les champs de l'utilisateur
+-   Response (200): data = array de FieldResource
+
+### POST /api/fields
+
+-   Body: { name: string, location: string }
+-   Succès (201): created FieldResource
+
+### GET /api/fields/{field}
+
+-   Path: field (int)
+-   Succès (200): FieldResource
+
+### PUT/PATCH /api/fields/{field}
+
+-   Body: { name?, location? }
+-   Succès (200): FieldResource
+
+### DELETE /api/fields/{field}
+
+-   Succès (200): { status: success, message: "Field deleted successfully", data: null }
+
+### GET /api/fields/{field}/parcels
+
+-   Succès (200): data = array de ParcelResource
+
+---
+
+## Parcels (protected)
+
+### GET /api/parcels
+
+-   Liste des parcelles
+-   Réponse (200): array de ParcelResource
+
+### POST /api/parcels
+
+-   Body: { field_id: integer }
+-   Succès (201): ParcelResource
+
+### GET /api/parcels/{parcel}
+
+-   Succès (200): ParcelResource
+
+### PUT/PATCH /api/parcels/{parcel}
+
+-   Body: { field_id? }
+-   Succès (200): ParcelResource
+
+### DELETE /api/parcels/{parcel}
+
+-   Succès (200): deletion message
+
+---
+
+## Soil analyses (protected)
+
+Déclaré via resource (except update)
+
+### GET /api/soil-analyses
+
+-   Retourne les analyses (transformed via DTO `SoilAnalysisResponse`)
+-   Réponse (200): array de SoilAnalysisResponse
+
+### POST /api/soil-analyses
+
+-   Body (application/json):
+    -   temperature (float)
+    -   humidity (float)
+    -   ph (float)
+    -   ec (float)
+    -   n (float)
+    -   p (float)
+    -   k (float)
+    -   sensor_model (string|null)
+    -   parcel_id (integer|null)
+-   Succès (201): SoilAnalysisResponse
+-   Validation gérée par `StoreSoilAnalysisRequestDto`
+
+### GET /api/soil-analyses/{soil_analysis}
+
+-   Succès (200): SoilAnalysisResponse
+
+### DELETE /api/soil-analyses/{soil_analysis}
+
+-   Succès (200): deletion message
+
+### GET /api/users/{user}/soil-analyses (protected)
+
+-   Récupère analyses récentes pour l'utilisateur
+
+---
+
+## Analyses (Analysis)
+
+### GET /api/analyses
+
+-   Liste des analyses (service + AnalysisResponse)
+
+### GET /api/analyses/{analysis}
+
+-   Détails d'une analysis
+
+### DELETE /api/analyses/{analysis}
+
+-   Supprime une analysis
+
+Note: POST /api/analyses retourne 405 (non supporté)
+
+---
+
+## Modèles principaux (extrait)
+
+User
+{
+"id":1,
+"lastname":"string",
+"firstname":"string",
+"phone_number":"string",
+"calling_code":"string|null",
+"created_at":"timestamp",
+"updated_at":"timestamp"
+}
+
+Field
+{
+"id":1,
+"name":"string",
+"location":"string",
+"user_id":1,
+"created_at":"timestamp"
+}
+
+Parcel
+{
+"id":1,
+"field_id":1,
+"created_at":"timestamp"
+}
+
+SoilAnalysisResponse (résumé)
+{
+"id":1,
+"temperature":25.3,
+"humidity":45.2,
+"ph":6.5,
+"ec":1.2,
+"n":0.5,
+"p":0.3,
+"k":0.4,
+"sensor_model":"XYZ-100",
+"parcel_id":1,
+"created_at":"timestamp"
+}
+
+---
+
+## Codes HTTP communs
+
+-   200 OK
+-   201 Created
+-   400 Bad Request
+-   401 Unauthorized
+-   403 Forbidden
+-   404 Not Found
+-   422 Unprocessable Entity (validation)
+-   500 Internal Server Error
+
+---
+
+## Bonnes pratiques & remarques
+
+-   Les listings peuvent être volumineux : ajouter la pagination si nécessaire (suggestion).
+-   Les règles de validation sont définies dans `app/Http/Requests/*` — se référer pour le schéma exact.
+-   Pour une doc interactive, installer Swagger/OpenAPI (e.g. `darkaonline/l5-swagger`).
 
 ---
 
 Dernière mise à jour: 18 octobre 2025
-
-**Paramètres:**
-
-| Paramètre             | Type   | Requis    | Description                                     |
-| --------------------- | ------ | --------- | ----------------------------------------------- |
-| lastname              | string | Oui       | Nom de famille (max: 255 caractères)            |
-| firstname             | string | Oui       | Prénom (max: 255 caractères)                    |
-| phone_number          | string | Oui       | Numéro de téléphone unique (max: 20 caractères) |
-| password              | string | Oui       | Mot de passe (min: 8 caractères)                |
-| password_confirmation | string | Oui       | Confirmation du mot de passe                    |
-| calling_code          | string | Optionnel | Code d'appel du pays (max: 10 caractères)       |
-
-**Réponse de succès (201):**
-
-```json
-{
-    "status": "success",
-    "message": "Farmer registered successfully",
-    "data": {
-        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-        "token_type": "bearer",
-        "expires_in": 3600,
-        "user": {
-            "id": 1,
-            "lastname": "Dupont",
-            "firstname": "Jean",
-            "phone_number": "123456789",
-            "calling_code": "+33",
-            "created_at": "2024-01-15T10:30:00.000000Z",
-            "updated_at": "2024-01-15T10:30:00.000000Z"
-        }
-    }
-}
-```
-
-**Réponses d'erreur:**
-
--   `422 Unprocessable Entity`: Erreurs de validation (numéro de téléphone déjà utilisé, etc.)
--   `500 Internal Server Error`: Erreur serveur
-
----
-
-#### 1.2 Connexion Utilisateur
-
-**POST** `/api/auth/login`
-
-Authentifie un utilisateur avec son numéro de téléphone et mot de passe, retourne un token JWT.
-
-**Corps de la requête:**
-
-```json
-{
-    "phone_number": "123456789",
-    "password": "motdepasse123"
-}
-```
-
-**Paramètres:**
-
-| Paramètre    | Type   | Requis | Description                          |
-| ------------ | ------ | ------ | ------------------------------------ |
-| phone_number | string | Oui    | Numéro de téléphone de l'utilisateur |
-| password     | string | Oui    | Mot de passe (min: 8 caractères)     |
-
-**Réponse de succès (200):**
-
-```json
-{
-    "status": "success",
-    "message": "Login successful",
-    "data": {
-        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-        "token_type": "bearer",
-        "expires_in": 3600,
-        "user": {
-            "id": 1,
-            "lastname": "Dupont",
-            "firstname": "Jean",
-            "phone_number": "123456789",
-            "created_at": "2024-01-15T10:30:00.000000Z"
-        }
-    }
-}
-```
-
-**Réponses d'erreur:**
-
--   `401 Unauthorized`: Identifiants incorrects
--   `422 Unprocessable Entity`: Erreurs de validation
--   `500 Internal Server Error`: Erreur JWT
-
----
-
-#### 1.3 Déconnexion Utilisateur
-
-**POST** `/api/auth/logout`
-
-Révoque le token JWT de l'utilisateur authentifié.
-
-**En-têtes requis:**
-
-```text
-Authorization: Bearer {jwt_token}
-```
-
-**Réponse de succès (200):**
-
-```json
-{
-    "status": "success",
-    "message": "Logout successful",
-    "data": null
-}
-```
-
-**Réponses d'erreur:**
-
--   `401 Unauthorized`: Token JWT invalide ou manquant
-
----
-
-#### 1.4 Actualiser le Token
-
-**POST** `/api/auth/refresh`
-
-Actualise le token JWT existant et retourne un nouveau token.
-
-**En-têtes requis:**
-
-```text
-Authorization: Bearer {jwt_token}
-```
-
-**Réponse de succès (200):**
-
-```json
-{
-    "status": "success",
-    "message": "Token refreshed successfully",
-    "data": {
-        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-        "token_type": "bearer",
-        "expires_in": 3600
-    }
-}
-```
-
-**Réponses d'erreur:**
-
--   `401 Unauthorized`: Token JWT invalide
--   `500 Internal Server Error`: Erreur lors de l'actualisation
-
----
-
-#### 1.5 Profil Utilisateur
-
-**GET** `/api/auth/me`
-
-Récupère les informations du profil de l'utilisateur authentifié.
-
-**En-têtes requis:**
-
-```text
-Authorization: Bearer {jwt_token}
-```
-
-**Réponse de succès (200):**
-
-```json
-{
-    "status": "success",
-    "message": "User retrieved successfully",
-    "data": {
-        "id": 1,
-        "lastname": "Dupont",
-        "firstname": "Jean",
-        "phone_number": "123456789",
-        "calling_code": "+33",
-        "email_verified_at": null,
-        "created_at": "2024-01-15T10:30:00.000000Z",
-        "updated_at": "2024-01-15T10:30:00.000000Z"
-    }
-}
-```
-
-**Réponses d'erreur:**
-
--   `401 Unauthorized`: Token JWT invalide ou manquant
-
----
-
-### 2. Gestion OTP (One-Time Password)
-
-#### 2.1 Vérification OTP
-
-**POST** `/api/users/{user}/verify-otp`
-
-Vérifie le code OTP pour un utilisateur spécifique.
-
-**Paramètres d'URL:**
-
-| Paramètre | Type    | Description         |
-| --------- | ------- | ------------------- |
-| user      | integer | ID de l'utilisateur |
-
-**Corps de la requête:**
-
-```json
-{
-    "otp_code": "123456"
-}
-```
-
-**Paramètres:**
-
-| Paramètre | Type   | Requis | Description           |
-| --------- | ------ | ------ | --------------------- |
-| otp_code  | string | Oui    | Code OTP à 6 chiffres |
-
-**Réponse de succès (200):**
-
-```json
-{
-    "status": "success",
-    "message": "OTP verified successfully",
-    "data": null
-}
-```
-
-**Réponse d'échec (200):**
-
-```json
-{
-    "status": "success",
-    "message": "OTP verification failed",
-    "data": null
-}
-```
-
-**Réponses d'erreur:**
-
--   `422 Unprocessable Entity`: Code OTP invalide ou inexistant
--   `500 Internal Server Error`: Erreur serveur
-
----
-
-#### 2.2 Renvoyer un OTP
-
-**POST** `/api/users/{user}/resend-otp`
-
-Renvoie un nouveau code OTP à l'utilisateur spécifié.
-
-**Paramètres d'URL:**
-
-| Paramètre | Type    | Description         |
-| --------- | ------- | ------------------- |
-| user      | integer | ID de l'utilisateur |
-
-**Réponse de succès (200):**
-
-```json
-{
-    "status": "success",
-    "message": "OTP resent successfully",
-    "data": null
-}
-```
-
-**Réponses d'erreur:**
-
--   `500 Internal Server Error`: Erreur lors de l'envoi de l'OTP
-
----
-
-### 3. Gestion des Champs
-
-#### 3.1 Lister les Champs
-
-**GET** `/api/fields`
-
-Récupère la liste de tous les champs de l'utilisateur authentifié, triés par date de création décroissante.
-
-**En-têtes requis:**
-
-```text
-Authorization: Bearer {jwt_token}
-```
-
-**Réponse de succès (200):**
-
-```json
-{
-    "status": "success",
-    "message": "Fields retrieved successfully",
-    "data": [
-        {
-            "id": 1,
-            "name": "Champ Principal",
-            "location": "Bretagne, France",
-            "user_id": 1,
-            "created_at": "2024-01-15T10:30:00.000000Z",
-            "updated_at": "2024-01-15T10:30:00.000000Z"
-        }
-    ]
-}
-```
-
-**Réponses d'erreur:**
-
--   `401 Unauthorized`: Token JWT manquant ou invalide
--   `500 Internal Server Error`: Erreur serveur
-
----
-
-#### 3.2 Créer un Champ
-
-**POST** `/api/fields`
-
-Crée un nouveau champ pour l'utilisateur authentifié.
-
-**En-têtes requis:**
-
-```text
-Authorization: Bearer {jwt_token}
-Content-Type: application/json
-```
-
-**Corps de la requête:**
-
-```json
-{
-    "name": "Champ Principal",
-    "location": "Bretagne, France"
-}
-```
-
-**Paramètres:**
-
-| Paramètre | Type   | Requis | Description                                 |
-| --------- | ------ | ------ | ------------------------------------------- |
-| name      | string | Oui    | Nom du champ (max: 255 caractères)          |
-| location  | string | Oui    | Localisation du champ (max: 255 caractères) |
-
-**Réponse de succès (201):**
-
-```json
-{
-    "status": "success",
-    "message": "Field created successfully",
-    "data": {
-        "id": 1,
-        "name": "Champ Principal",
-        "location": "Bretagne, France",
-        "user_id": 1,
-        "created_at": "2024-01-15T10:30:00.000000Z",
-        "updated_at": "2024-01-15T10:30:00.000000Z"
-    }
-}
-```
-
-**Réponses d'erreur:**
-
--   `401 Unauthorized`: Token JWT manquant ou invalide
--   `422 Unprocessable Entity`: Erreurs de validation
--   `500 Internal Server Error`: Erreur serveur
-
----
-
-#### 3.3 Afficher un Champ
-
-**GET** `/api/fields/{field}`
-
-Récupère les détails d'un champ spécifique.
-
-**En-têtes requis:**
-
-```text
-Authorization: Bearer {jwt_token}
-```
-
-**Paramètres d'URL:**
-
-| Paramètre | Type    | Description |
-| --------- | ------- | ----------- |
-| field     | integer | ID du champ |
-
-**Réponse de succès (200):**
-
-```json
-{
-    "status": "success",
-    "message": "Field retrieved successfully",
-    "data": {
-        "id": 1,
-        "name": "Champ Principal",
-        "location": "Bretagne, France",
-        "user_id": 1,
-        "created_at": "2024-01-15T10:30:00.000000Z",
-        "updated_at": "2024-01-15T10:30:00.000000Z"
-    }
-}
-```
-
-**Réponses d'erreur:**
-
--   `401 Unauthorized`: Token JWT manquant ou invalide
--   `404 Not Found`: Champ non trouvé
--   `500 Internal Server Error`: Erreur serveur
-
----
-
-#### 3.4 Modifier un Champ
-
-**PUT/PATCH** `/api/fields/{field}`
-
-Modifie un champ existant.
-
-**En-têtes requis:**
-
-```text
-Authorization: Bearer {jwt_token}
-Content-Type: application/json
-```
-
-**Paramètres d'URL:**
-
-| Paramètre | Type    | Description |
-| --------- | ------- | ----------- |
-| field     | integer | ID du champ |
-
-**Corps de la requête:**
-
-```json
-{
-    "name": "Nouveau Nom du Champ",
-    "location": "Nouvelle Localisation"
-}
-```
-
-**Réponse de succès (200):**
-
-```json
-{
-    "status": "success",
-    "message": "Field updated successfully",
-    "data": {
-        "id": 1,
-        "name": "Nouveau Nom du Champ",
-        "location": "Nouvelle Localisation",
-        "user_id": 1,
-        "created_at": "2024-01-15T10:30:00.000000Z",
-        "updated_at": "2024-01-15T12:00:00.000000Z"
-    }
-}
-```
-
-**Réponses d'erreur:**
-
--   `401 Unauthorized`: Token JWT manquant ou invalide
--   `404 Not Found`: Champ non trouvé
--   `422 Unprocessable Entity`: Erreurs de validation
--   `500 Internal Server Error`: Erreur serveur
-
----
-
-#### 3.5 Supprimer un Champ
-
-**DELETE** `/api/fields/{field}`
-
-Supprime un champ existant.
-
-**En-têtes requis:**
-
-```text
-Authorization: Bearer {jwt_token}
-```
-
-**Paramètres d'URL:**
-
-| Paramètre | Type    | Description |
-| --------- | ------- | ----------- |
-| field     | integer | ID du champ |
-
-**Réponse de succès (200):**
-
-```json
-{
-    "status": "success",
-    "message": "Field deleted successfully",
-    "data": null
-}
-```
-
-**Réponses d'erreur:**
-
--   `401 Unauthorized`: Token JWT manquant ou invalide
--   `404 Not Found`: Champ non trouvé
--   `500 Internal Server Error`: Erreur serveur
-
----
-
-#### 3.6 Récupérer les Parcelles d'un Champ
-
-**GET** `/api/fields/{field}/parcels`
-
-Récupère toutes les parcelles associées à un champ spécifique.
-
-**En-têtes requis:**
-
-```text
-Authorization: Bearer {jwt_token}
-```
-
-**Paramètres d'URL:**
-
-| Paramètre | Type    | Description |
-| --------- | ------- | ----------- |
-| field     | integer | ID du champ |
-
-**Réponse de succès (200):**
-
-```json
-{
-    "status": "success",
-    "message": "Parcels retrieved successfully",
-    "data": [
-        {
-            "id": 1,
-            "field_id": 1,
-            "created_at": "2024-01-15T10:30:00.000000Z",
-            "updated_at": "2024-01-15T10:30:00.000000Z"
-        }
-    ]
-}
-```
-
-**Réponses d'erreur:**
-
--   `401 Unauthorized`: Token JWT manquant ou invalide
--   `404 Not Found`: Champ non trouvé
--   `500 Internal Server Error`: Erreur serveur
-
----
-
-### 4. Gestion des Parcelles
-
-#### 4.1 Lister les Parcelles
-
-**GET** `/api/parcels`
-
-Récupère la liste de toutes les parcelles, triées par date de création décroissante.
 
 **En-têtes requis:**
 
