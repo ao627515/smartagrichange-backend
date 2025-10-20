@@ -6,6 +6,7 @@ use Exception;
 use App\Models\User;
 use App\Events\OtpVerifed;
 use App\DTO\Requests\Aquilas\AquilasSendSmsRequestDto;
+use App\DTO\Responses\Aquilas\AquilasSendSmsSuccessResponseDto;
 
 class OtpService
 {
@@ -46,15 +47,29 @@ class OtpService
 
     public function resendOtp($userId)
     {
+        //  Vérifie que l'utilisateur existe dans la base de données.
+        // Si l'utilisateur n'existe pas, une exception "ModelNotFoundException" sera levée.
         $this->userService->findOrFail($userId);
 
+        // Récupère le dernier OTP généré pour cet utilisateur.
         $lastOtp = $this->userOtpService->getLatestOtpForUser($userId);
-        if ($lastOtp && !$lastOtp->is_expired) {
-            $timeSinceLastOtp = now()->diffInSeconds($lastOtp->created_at);
 
+
+        // Vérifie si le dernier OTP est encore valide (non expiré)
+        if ($lastOtp && !$lastOtp->is_expired) {
+
+            $now = $lastOtp->created_at->getTimestamp();
+            // Calcule le temps écoulé (en secondes) depuis la création du dernier OTP.
+            $timeSinceLastOtp = now()->getTimestamp() - $lastOtp->created_at->getTimestamp();
+
+            // Convertit l’intervalle de réenvoi autorisé (en minutes) en secondes.
+            // Par exemple, si resendInterval = 2, alors délai minimal = 120 secondes.
             if ($timeSinceLastOtp < $this->resendInterval * 60) {
+
+                // emps restant avant de pouvoir redemander un nouvel OTP.
                 $secondsLeft = $this->resendInterval * 60 - $timeSinceLastOtp;
 
+                // Formate un message clair selon que le temps restant soit en secondes ou minutes.
                 if ($secondsLeft < 60) {
                     $message = "Please wait {$secondsLeft} second" . ($secondsLeft > 1 ? 's' : '') . " before requesting a new OTP";
                 } else {
@@ -62,14 +77,19 @@ class OtpService
                     $message = "Please wait {$minutesLeft} minute" . ($minutesLeft > 1 ? 's' : '') . " before requesting a new OTP";
                 }
 
+                // Empêche le réenvoi avant la fin du délai minimal.
+                // Une exception est levée, ce qui stoppe le processus.
                 throw new Exception($message);
             }
         }
 
-        $this->handleOtp($userId);
+        // Si l’utilisateur est éligible au réenvoi (dernier OTP expiré ou utilisé),
+        // on génère et envoie un nouveau code OTP via handleOtp().
+        return $this->handleOtp($userId);
     }
 
-    public function handleOtp($userId): void
+
+    public function handleOtp($userId)
     {
         $user = $this->userService->findOrFail($userId);
 
@@ -80,10 +100,11 @@ class OtpService
         ]);
         $req->text = $req->getOtp($otp);
 
-        $meta = $this->sendOtp($req);
 
-        $meta = $meta ? json_encode($meta->toArray()) : null;
-        // $meta = null;
+        $metaRaw = $this->sendOtp($req);
+
+
+        $meta = $metaRaw ? json_encode($metaRaw->toArray()) : null;
 
 
         $this->userOtpService->create([
@@ -91,6 +112,8 @@ class OtpService
             'otp_code' => $otp,
             'meta' => $meta,
         ]);
+
+        return $metaRaw;
     }
 
     public function verifyOtp($userId, string $otp): bool

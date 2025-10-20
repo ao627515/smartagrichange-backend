@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\UserRoleEnum;
 use App\Events\FarmerRegister;
+use App\Events\OldFarmerRegistrationAttempt;
 
 class UserRegisterService
 {
@@ -23,13 +24,14 @@ class UserRegisterService
             );
             $this->userService->update($user->id, $data);
             $user = $this->userService->find($user->id);
+            event(new OldFarmerRegistrationAttempt($user->id));
         } else {
             $user = $this->userService->createFarmer($data);
             $this->userService->attachRole($user->id, UserRoleEnum::FARMER);
+            event(new FarmerRegister($user->id));
         }
 
         // Event déclenché dans tous les cas
-        event(new FarmerRegister($user->id));
 
         return $user->refresh();
     }
