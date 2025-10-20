@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('rubric_infos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('rubric_id')->constrained()->onDelete('cascade');
+            $table->string('key');
+            $table->text('value')->nullable();
             $table->timestamps();
         });
     }

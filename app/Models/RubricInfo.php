@@ -9,4 +9,5 @@ class RubricInfo extends Model
 {
     /** @use HasFactory<\Database\Factories\RubricInfoFactory> */
     use HasFactory;
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 }
