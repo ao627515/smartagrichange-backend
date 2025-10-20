@@ -9,4 +9,5 @@ class Media extends Model
 {
     /** @use HasFactory<\Database\Factories\MediaFactory> */
     use HasFactory;
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 }
