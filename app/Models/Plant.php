@@ -9,4 +9,5 @@ class Plant extends Model
 {
     /** @use HasFactory<\Database\Factories\PlantFactory> */
     use HasFactory;
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 }
