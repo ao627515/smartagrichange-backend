@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FieldController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ParcelController;
 use App\Http\Controllers\UserOtpController;
 use App\Http\Controllers\AnalysisController;
@@ -11,6 +12,8 @@ use App\Http\Controllers\NewPasswordController;
 use App\Http\Resources\SuccessResponseResource;
 use App\Http\Controllers\SoilAnalysisController;
 use App\Http\Controllers\FarmerProfileController;
+use App\Http\Controllers\PlantController;
+use App\Models\Role;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -49,4 +52,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('users/{user}/soil-analyses', [SoilAnalysisController::class, 'userAnalyses']);
     Route::post('users/{user}/change-password', [NewPasswordController::class, 'changeUserPassword']);
     Route::apiResource('analyses', AnalysisController::class)->except('update');
+    Route::apiResource('media', MediaController::class);
+    Route::apiResource('plants', PlantController::class);
 });
