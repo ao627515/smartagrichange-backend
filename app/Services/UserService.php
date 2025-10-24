@@ -9,6 +9,7 @@ use App\Services\BaseService;
 use App\Events\FarmerRegister;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 use App\Repositories\CountryCallingCodeRepository;
 use App\DTO\Req\Aquilas\AquilasSendSmsRequestDto;
@@ -85,6 +86,9 @@ class UserService extends BaseService
 
     public function ensurePhoneNumberIsVerified($phoneNumber, $callingCode)
     {
+        if (!$this->repository->phoneNumberExists($phoneNumber, $callingCode))
+            return false;
+
         $isVerified = $this->repository->isPhoneNumberVerified($phoneNumber, $callingCode);
         if (!$isVerified) {
             throw new Exception("Phone number {$callingCode}{$phoneNumber} is not verified. Please resend OTP to verify.");
