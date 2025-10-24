@@ -1,15 +1,14 @@
 <?php
 
-namespace App\DTO\Requests;
+namespace App\DTO\Req;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\LaravelData\Data;
 
-class PlantRubricInfoReqDto extends Data
+class PlantRubricInfoWithoutRubricIdReqDto extends Data
 {
     public function __construct(
         public string $key,
         public string $value,
-        public int $rubric_id
     ) {}
 }

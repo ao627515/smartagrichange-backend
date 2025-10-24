@@ -1,9 +1,9 @@
 <?php
 
-namespace App\DTO\Requests;
+namespace App\DTO\Req;
 
 use Spatie\LaravelData\Data;
-use App\DTO\Requests\PlantRubricWithoutPlantIdReqDto;
+use App\DTO\Req\PlantRubricWithoutPlantIdReqDto;
 
 
 class PlantRequestDto extends Data

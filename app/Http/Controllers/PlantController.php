@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Plant;
 use Illuminate\Http\Request;
 use App\Services\PlantService;
-use App\DTO\Requests\PlantRequestDto;
+use App\DTO\Req\PlantRequestDto;
 use App\DTO\Responses\PlantResponseDto;
 use App\Http\Resources\SuccessResponseResource;
 

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\DTO\Requests\Aquilas\AquilasSendSmsRequestDto;
+use App\DTO\Req\Aquilas\AquilasSendSmsRequestDto;
 use App\DTO\Responses\Aquilas\AquilasCreditResponseDto;
 use App\DTO\Responses\Aquilas\AquilasSendSmsSuccessResponseDto;
 use Illuminate\Support\Facades\Log;

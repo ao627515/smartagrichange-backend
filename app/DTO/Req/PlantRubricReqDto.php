@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTO\Requests;
+namespace App\DTO\Req;
 
 use Spatie\LaravelData\Data;
 

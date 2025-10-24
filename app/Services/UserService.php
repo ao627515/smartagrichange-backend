@@ -11,7 +11,7 @@ use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 use App\Repositories\CountryCallingCodeRepository;
-use App\DTO\Requests\Aquilas\AquilasSendSmsRequestDto;
+use App\DTO\Req\Aquilas\AquilasSendSmsRequestDto;
 
 class UserService extends BaseService
 {

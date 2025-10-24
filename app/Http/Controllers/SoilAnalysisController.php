@@ -9,7 +9,7 @@ use App\DTO\Data\CropRecommandedData;
 use App\Services\SoilAnalysisService;
 use App\Http\Resources\SuccessResponseResource;
 use App\DTO\Responses\SoilAnalysisResponse;
-use App\DTO\Requests\StoreSoilAnalysisRequestDto;
+use App\DTO\Req\StoreSoilAnalysisRequestDto;
 
 class SoilAnalysisController extends Controller
 {

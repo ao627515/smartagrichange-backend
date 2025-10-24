@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTO\Requests\Aquilas;
+namespace App\DTO\Req\Aquilas;
 
 use Spatie\LaravelData\Data;
 

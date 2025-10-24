@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\User\UserResource;
 use Illuminate\Http\Request;
 use App\Services\UserService;
-use App\DTO\Requests\FarmerProfileRequestDto;
+use App\DTO\Req\FarmerProfileRequestDto;
 use App\Http\Resources\SuccessResponseResource;
 
 class FarmerProfileController extends Controller

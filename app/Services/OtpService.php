@@ -5,7 +5,7 @@ namespace App\Services;
 use Exception;
 use App\Models\User;
 use App\Events\OtpVerifed;
-use App\DTO\Requests\Aquilas\AquilasSendSmsRequestDto;
+use App\DTO\Req\Aquilas\AquilasSendSmsRequestDto;
 use App\DTO\Responses\Aquilas\AquilasSendSmsSuccessResponseDto;
 
 class OtpService

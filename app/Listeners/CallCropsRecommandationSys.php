@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\DTO\Requests\CropPredictionProbabilitiesRequest;
+use App\DTO\Req\CropPredictionProbabilitiesRequest;
 use App\Events\SoilAnalysisCreated;
 use App\Services\CropsRecommandationSysService;
 use App\Services\SoilAnalysisService;

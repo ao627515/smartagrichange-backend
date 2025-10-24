@@ -9,7 +9,7 @@ use App\Services\UserOtpService;
 use Exception;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\DTO\Requests\Aquilas\AquilasSendSmsRequestDto;
+use App\DTO\Req\Aquilas\AquilasSendSmsRequestDto;
 
 class SendOtp
 {
