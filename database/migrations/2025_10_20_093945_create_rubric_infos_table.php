@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('rubric_id')->constrained()->onDelete('cascade');
             $table->string('key');
             $table->text('value');
+            $table->foreignId('user_id')->nullable()->constrained('users');
             $table->timestamps();
         });
     }

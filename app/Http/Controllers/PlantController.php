@@ -36,7 +36,7 @@ class PlantController extends Controller
     public function store(Request $request)
     {
         return $this->handleRequestException(function () use ($request) {
-            $data = PlantRequestDto::validateAndCreate($request)->all();
+            $data = PlantRequestDto::validateAndCreate($request->all())->toArray();
             $plant = $this->plantService->create($data);
 
             return new SuccessResponseResource(message: 'Plant created successfully', data: PlantResponseDto::fromModel($plant));
