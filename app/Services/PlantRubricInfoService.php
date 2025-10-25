@@ -26,4 +26,6 @@ class PlantRubricInfoService extends BaseService
         $rubric = $this->repository->create($data);
         return $rubric;
     }
+
+    
 }

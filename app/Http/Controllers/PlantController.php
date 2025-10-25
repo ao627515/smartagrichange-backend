@@ -6,6 +6,7 @@ use App\Models\Plant;
 use Illuminate\Http\Request;
 use App\Services\PlantService;
 use App\DTO\Req\PlantRequestDto;
+use App\DTO\Req\UpdatePlantRequestDto;
 use App\DTO\Responses\PlantResponseDto;
 use App\Http\Resources\SuccessResponseResource;
 
@@ -55,13 +56,21 @@ class PlantController extends Controller
         });
     }
 
+    public function showWithRubrics(string $plant){
+        return $this->handleRequestException(function () use ($plant) {
+            $plantModel = $this->plantService->findOrFailWithRubrics($plant);
+
+            return new SuccessResponseResource(message: 'Plant retrieved successfully', data: PlantResponseDto::fromModel($plantModel));
+        });
+    }
+
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $plant)
     {
         return $this->handleRequestException(function () use ($request, $plant) {
-            $data = PlantRequestDto::validateAndCreate($request)->all();
+            $data = UpdatePlantRequestDto::validateAndCreate($request->all())->toArray();
             $updatedPlant = $this->plantService->update($plant, $data);
 
             return new SuccessResponseResource(message: 'Plant updated successfully', data: PlantResponseDto::fromModel($updatedPlant));

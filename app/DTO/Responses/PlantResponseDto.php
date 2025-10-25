@@ -3,6 +3,7 @@
 namespace App\DTO\Responses;
 
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\Lazy;
 
 class PlantResponseDto extends Data
 {
@@ -16,6 +17,7 @@ class PlantResponseDto extends Data
         public ?string $geographical_zone,
         public ?string $created_at,
         public ?string $updated_at,
+        public Lazy|array $rubrics
     ) {}
 
     public static function fromModel($plant): self
@@ -29,7 +31,8 @@ class PlantResponseDto extends Data
             life_cycle: $plant->life_cycle,
             geographical_zone: $plant->geographical_zone,
             created_at: $plant->created_at,
-            updated_at: $plant->updated_at
+            updated_at: $plant->updated_at,
+            rubrics: Lazy::whenLoaded('rubrics', $plant, fn() => $plant->rubrics->toArray())
         );
     }
 }
