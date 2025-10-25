@@ -7,6 +7,7 @@ use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ParcelController;
 use App\Http\Controllers\UserOtpController;
 use App\Http\Controllers\AnalysisController;
+use App\Http\Controllers\AnomalyController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\NewPasswordController;
 use App\Http\Resources\SuccessResponseResource;
@@ -56,4 +57,5 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('plants', PlantController::class);
     Route::get('plants-with-rubrics/{plant}', [PlantController::class, 'showWithRubrics']);
     Route::get('plants-with-rubrics', [PlantController::class, 'indexWithRubrics']);
+    Route::apiResource('plants-anomalies', AnomalyController::class);
 });

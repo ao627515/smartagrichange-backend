@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('anomalies', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('description');
+            $table->text('symptoms');
+            $table->text('solutions');
+            $table->text('preventions');
+            $table->text('causes');
+            $table->string('category');
+            $table->foreignId('user_id')->nullable()->constrained('users');
+            $table->foreignId('plant_id')->constrained('plants')->cascadeOnDelete();
             $table->timestamps();
         });
     }
