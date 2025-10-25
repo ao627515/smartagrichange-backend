@@ -40,6 +40,11 @@ abstract class BaseService
         return $this->repository->allOrdered($orderBy, $direction, $columns);
     }
 
+    public function latestWithRelations($relations, $columns = ['*'])
+    {
+        return $this->repository->lastetWithRelations($relations, $columns);
+    }
+
     /**
      * Récupérer les enregistrements avec pagination.
      *

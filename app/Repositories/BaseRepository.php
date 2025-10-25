@@ -38,6 +38,16 @@ abstract class BaseRepository
         return $this->model->orderBy($orderBy, $direction)->get($columns);
     }
 
+    public function lastest($columns = ['*'])
+    {
+        return $this->model->lastest()->get($columns);
+    }
+
+    public function lastetWithRelations($relations, $columns = ['*'])
+    {
+        return $this->model->with($relations)->latest()->get($columns);
+    }
+
     /**
      * Récupère tous les enregistrements avec pagination.
      *

@@ -55,4 +55,5 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('media', MediaController::class);
     Route::apiResource('plants', PlantController::class);
     Route::get('plants-with-rubrics/{plant}', [PlantController::class, 'showWithRubrics']);
+    Route::get('plants-with-rubrics', [PlantController::class, 'indexWithRubrics']);
 });

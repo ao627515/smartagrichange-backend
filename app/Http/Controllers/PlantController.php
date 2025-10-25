@@ -30,6 +30,16 @@ class PlantController extends Controller
             return new SuccessResponseResource(message: 'Plants retrieved successfully', data: $plantDtos);
         });
     }
+    public function indexWithRubrics()
+    {
+        return $this->handleRequestException(function () {
+            $plants = $this->plantService->latestWithRelations(['rubrics.infos']);
+
+            $plantDtos = PlantResponseDto::collect($plants);
+
+            return new SuccessResponseResource(message: 'Plants retrieved successfully', data: $plantDtos);
+        });
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -56,7 +66,8 @@ class PlantController extends Controller
         });
     }
 
-    public function showWithRubrics(string $plant){
+    public function showWithRubrics(string $plant)
+    {
         return $this->handleRequestException(function () use ($plant) {
             $plantModel = $this->plantService->findOrFailWithRubrics($plant);
 
