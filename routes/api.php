@@ -55,6 +55,7 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('analyses', AnalysisController::class)->except('update');
     Route::apiResource('media', MediaController::class);
     Route::apiResource('plants', PlantController::class);
+    Route::get('plants/{plant}/anomalies', [PlantController::class, 'anomalies']);
     Route::get('plants-with-rubrics/{plant}', [PlantController::class, 'showWithRubrics']);
     Route::get('plants-with-rubrics', [PlantController::class, 'indexWithRubrics']);
     Route::apiResource('plants-anomalies', AnomalyController::class);

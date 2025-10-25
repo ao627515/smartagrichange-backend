@@ -71,4 +71,10 @@ class PlantService extends BaseService
             }
         }
     }
+
+    public function anomalies(int $plantId)
+    {
+        $plant = $this->findOrFail($plantId);
+        return $plant->anomalies;
+    }
 }

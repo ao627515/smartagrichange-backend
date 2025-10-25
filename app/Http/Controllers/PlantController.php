@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\Data\PlantAnomalyData;
 use App\Models\Plant;
 use Illuminate\Http\Request;
 use App\Services\PlantService;
@@ -97,6 +98,15 @@ class PlantController extends Controller
             $this->plantService->delete($plant);
 
             return new SuccessResponseResource(message: 'Plant deleted successfully');
+        });
+    }
+
+    public function anomalies(int $plant)
+    {
+        return $this->handleRequestException(function () use ($plant) {
+            $data = $this->plantService->anomalies($plant);
+
+            return new SuccessResponseResource(message: 'Plant anomalies retrieved successfully', data: PlantAnomalyData::collect($data));
         });
     }
 }
