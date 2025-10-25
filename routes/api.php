@@ -59,4 +59,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('plants-with-rubrics/{plant}', [PlantController::class, 'showWithRubrics']);
     Route::get('plants-with-rubrics', [PlantController::class, 'indexWithRubrics']);
     Route::apiResource('plants-anomalies', AnomalyController::class);
+    Route::post('plants/{plant}/upload-image', [PlantController::class, 'uploadImage']);
+    Route::post('plants/{plant}/upload-images', [PlantController::class, 'uploadImages']);
+    Route::post('plants-anomalies/{anomaly}/upload-image', [AnomalyController::class, 'uploadImage']);
+    Route::post('plants-anomalies/{anomaly}/upload-images', [AnomalyController::class, 'uploadImages']);
 });

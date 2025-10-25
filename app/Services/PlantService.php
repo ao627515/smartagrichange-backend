@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Events\PlantCreated;
 use App\Events\PlantUpdated;
 use App\Repositories\PlantRepository;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 
 class PlantService extends BaseService
@@ -15,8 +17,10 @@ class PlantService extends BaseService
      */
     protected $repository;
 
-    public function __construct(PlantRepository $repository)
-    {
+    public function __construct(
+        PlantRepository $repository,
+        public MediaService $mediaService
+    ) {
         parent::__construct($repository);
         $this->repository = $repository;
     }
@@ -76,5 +80,24 @@ class PlantService extends BaseService
     {
         $plant = $this->findOrFail($plantId);
         return $plant->anomalies;
+    }
+
+    public function uploadImage($plantId, UploadedFile $uploadedFile)
+    {
+        $plant = $this->findOrFail($plantId);
+        return $this->mediaService->uploadFiles($plant, 'plant_images', $uploadedFile);
+    }
+
+
+    /**
+     * Summary of uploadImages
+     * @param int|string $plantId
+     * @param UploadedFile[] $uploadedFiles
+     * @return \Spatie\MediaLibrary\MediaCollections\Models\Media[]
+     */
+    public function uploadImages($plantId, array $uploadedFiles)
+    {
+        $plant = $this->findOrFail($plantId);
+        return $this->mediaService->uploadFiles($plant, 'plant_images', $uploadedFiles);
     }
 }

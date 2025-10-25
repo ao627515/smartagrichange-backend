@@ -85,4 +85,39 @@ class AnomalyController extends Controller
             return new SuccessResponseResource('Anomaly deleted successfully');
         });
     }
+
+    public function uploadImage(Request $req, int $anomaly)
+    {
+        return $this->handleRequestException(function () use ($req, $anomaly) {
+            $data = $req->validate([
+                'image' => ['required', 'image', 'max:2048'],
+            ]);
+
+
+            $media = $this->anomalyService->uploadImage($anomaly, $data['image']);
+
+            return new SuccessResponseResource(
+                data: $media,
+                message: 'Anomaly image uploaded successfully'
+            );
+        });
+    }
+
+    public function uploadImages(Request $req, int $anomaly)
+    {
+        return $this->handleRequestException(function () use ($req, $anomaly) {
+            $data = $req->validate([
+                'images' => ['required', 'array'],
+                'images.*' => ['image', 'max:2048'],
+            ]);
+
+
+            $mediaList = $this->anomalyService->uploadImages($anomaly, $data['images']);
+
+            return new SuccessResponseResource(
+                data: $mediaList,
+                message: 'Anomaly images uploaded successfully'
+            );
+        });
+    }
 }

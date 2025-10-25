@@ -109,4 +109,39 @@ class PlantController extends Controller
             return new SuccessResponseResource(message: 'Plant anomalies retrieved successfully', data: PlantAnomalyData::collect($data));
         });
     }
+
+    public function uploadImage(Request $req, int $plant)
+    {
+        return $this->handleRequestException(function () use ($req, $plant) {
+            $data = $req->validate([
+                'image' => ['required', 'image', 'max:2048'],
+            ]);
+
+
+            $media = $this->plantService->uploadImage($plant, $data['image']);
+
+            return new SuccessResponseResource(
+                data: $media,
+                message: 'Plant image uploaded successfully'
+            );
+        });
+    }
+
+    public function uploadImages(Request $req, int $plant)
+    {
+        return $this->handleRequestException(function () use ($req, $plant) {
+            $data = $req->validate([
+                'images' => ['required', 'array'],
+                'images.*' => ['image', 'max:2048'],
+            ]);
+
+
+            $mediaList = $this->plantService->uploadImages($plant, $data['images']);
+
+            return new SuccessResponseResource(
+                data: $mediaList,
+                message: 'Plant images uploaded successfully'
+            );
+        });
+    }
 }

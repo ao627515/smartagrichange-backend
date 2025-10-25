@@ -8,6 +8,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Plant extends Model implements HasMedia
 {
@@ -25,5 +26,21 @@ class Plant extends Model implements HasMedia
     public function anomalies()
     {
         return $this->hasMany(Anomaly::class, 'plant_id');
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this
+            ->addMediaCollection('plant_images')
+            ->useDisk(config('media-library.disk_name')); 
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this
+            ->addMediaConversion('thumb')
+            ->width(300)
+            ->height(200)
+            ->nonQueued(); // ou queued
     }
 }
