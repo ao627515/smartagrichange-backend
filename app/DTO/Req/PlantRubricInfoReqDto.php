@@ -10,6 +10,6 @@ class PlantRubricInfoReqDto extends Data
     public function __construct(
         public string $key,
         public string $value,
-        public int $rubric_id
+        public string $rubric_id
     ) {}
 }

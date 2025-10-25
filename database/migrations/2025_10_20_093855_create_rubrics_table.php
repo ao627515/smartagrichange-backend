@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rubrics', function (Blueprint $table) {
-            $table->id();
+            // $table->id();
+            $table->ulid('id')->primary();
             $table->string('name');
             $table->string('description')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users');

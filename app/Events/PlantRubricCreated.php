@@ -18,7 +18,7 @@ class PlantRubricCreated
      * Create a new event instance.
      */
     public function __construct(
-        public int $rubricId,
+        public string $rubricId,
         public array $data
     ) {
         //
