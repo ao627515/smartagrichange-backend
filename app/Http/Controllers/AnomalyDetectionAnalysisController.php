@@ -30,8 +30,8 @@ class AnomalyDetectionAnalysisController extends Controller
     {
         return $this->handleRequestException(function () use ($request) {
             $data = AnomalyAnalysisImageRequest::validateAndCreate($request->all())->toArray();
-            // $res = $this->anomalyAnalysisService->createwithSingleImg($data);
-            $res = null;
+            $res = $this->anomalyAnalysisService->createwithSingleImg($data);
+            // $res = null;
             return new SuccessResponseResource(
                 message: 'Soil analysis created successfully',
                 data: $res

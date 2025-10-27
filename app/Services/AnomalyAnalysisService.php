@@ -31,7 +31,7 @@ class AnomalyAnalysisService extends BaseService
 
         $record = $this->repository->createWithAnalysis($data);
 
-        event(new AnomalyAnalysisCreated($record->id, ['img' => $data['image']]));
+        // event(new AnomalyAnalysisCreated($record->id, ['img' => $data['image']]));
 
         return $record->fresh();
     }
