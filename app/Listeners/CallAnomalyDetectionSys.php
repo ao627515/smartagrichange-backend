@@ -39,5 +39,14 @@ class CallAnomalyDetectionSys
             $this->anomalyAnalysisService->update($anomalyAnalysis->id, ['model_result' => $res->toJson()]);
             $anomalyAnalysis->addMedia($data['img'])->toMediaCollection('anomaly_analysis');
         }
+
+        if (isset($data['imgs']) && is_array($data['imgs'])) {
+            $req = ['images' => $data['imgs']];
+            $res = $this->anomalyDetectionSysService->predictMultipleFiles($req);
+            $this->anomalyAnalysisService->update($anomalyAnalysis->id, ['model_result' => $res->toJson()]);
+            foreach ($data['imgs'] as $file) {
+                $anomalyAnalysis->addMedia($file)->toMediaCollection('anomaly_analysis');
+            }
+        }
     }
 }

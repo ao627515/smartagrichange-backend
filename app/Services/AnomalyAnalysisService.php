@@ -38,6 +38,17 @@ class AnomalyAnalysisService extends BaseService
 
     public function createwithMultiImgs(array $data)
     {
-        return [];
+        $data = array_merge(
+            $data,
+            [
+                'user_id' => Auth::id()
+            ]
+        );
+
+        $record = $this->repository->createWithAnalysis($data);
+
+        event(new AnomalyAnalysisCreated($record->id, ['imgs' => $data['images']]));
+
+        return $record->refresh()->load('analysis');
     }
 }

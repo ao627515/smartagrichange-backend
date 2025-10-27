@@ -8,7 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use App\DTO\Data\ClassifierPrediction;
 use Illuminate\Http\Client\RequestException;
-
+use Illuminate\Support\Arr;
 
 class AnomalyDetectionSysService
 {
@@ -62,5 +62,48 @@ class AnomalyDetectionSysService
     }
 
 
-    public function predictMultipleFiles() {}
+    /**
+     * Summary of predictMultipleFiles
+     * @param array{images:UploadedFile[]} $data
+     * @throws InvalidArgumentException
+     * @throws Exception
+     * @return ClassifierPrediction
+     */
+    public function predictMultipleFiles(array $data): ClassifierPrediction
+    {
+        // Vérification des fichiers
+        if (!isset($data['images']) || !is_array($data['images'])) {
+            throw new InvalidArgumentException('Un tableau de fichiers est requis.');
+        }
+
+        $multipart = [];
+
+        foreach ($data['images'] as $file) {
+            if (!$file instanceof UploadedFile) {
+                throw new InvalidArgumentException('Chaque élément doit être un UploadedFile.');
+            }
+
+            $multipart[] = [
+                'name'     => 'images', // clé répétée pour chaque fichier
+                'contents' => fopen($file->getRealPath(), 'r'),
+                'filename' => $file->getClientOriginalName(),
+            ];
+        }
+
+        // Envoi de la requête HTTP
+        $response = Http::asMultipart()
+            ->acceptJson()
+            ->post("{$this->endpoint}/predict/multi", $multipart);
+
+        // Gestion des erreurs
+        if ($response->failed()) {
+            throw new Exception(sprintf(
+                'Erreur lors de la prédiction (%d): %s',
+                $response->status(),
+                $response->body()
+            ));
+        }
+
+        return ClassifierPrediction::from($response->json());
+    }
 }

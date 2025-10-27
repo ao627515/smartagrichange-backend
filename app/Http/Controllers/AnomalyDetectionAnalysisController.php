@@ -8,6 +8,7 @@ use App\Services\AnomalyAnalysisService;
 use App\DTO\Req\AnomalyAnalysisImageRequest;
 use App\DTO\Req\AnomalyAnalysisImagesRequest;
 use App\Http\Resources\SuccessResponseResource;
+use App\DTO\Responses\AnomalyAnalysisMultiFilesResponse;
 use App\DTO\Responses\AnomalyAnalysisSingleFileResponse;
 
 class AnomalyDetectionAnalysisController extends Controller
@@ -39,7 +40,8 @@ class AnomalyDetectionAnalysisController extends Controller
         });
     }
 
-    public function createwithMultiImgs(Request $request){
+    public function createwithMultiImgs(Request $request)
+    {
 
         return $this->handleRequestException(function () use ($request) {
             $data = AnomalyAnalysisImagesRequest::validateAndCreate($request->all())->toArray();
@@ -47,8 +49,7 @@ class AnomalyDetectionAnalysisController extends Controller
             // $res = null;
             return new SuccessResponseResource(
                 message: 'Soil analysis created successfully',
-                // data: AnomalyAnalysisSingleFileResponse::from($res)
-                data: $res
+                data: AnomalyAnalysisMultiFilesResponse::from($res)
             );
         });
     }
@@ -61,13 +62,6 @@ class AnomalyDetectionAnalysisController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, AnomalyDetectionAnalysis $anomalyDetectionAnalysis)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.
