@@ -7,14 +7,13 @@ use App\Models\AnomalyDetectionAnalysis;
 use App\Services\AnomalyAnalysisService;
 use App\DTO\Req\AnomalyAnalysisImageRequest;
 use App\Http\Resources\SuccessResponseResource;
+use App\DTO\Responses\AnomalyAnalysisSingleFileResponse;
 
 class AnomalyDetectionAnalysisController extends Controller
 {
     public function __construct(
         public AnomalyAnalysisService $anomalyAnalysisService
-    ){
-
-    }
+    ) {}
     /**
      * Display a listing of the resource.
      */
@@ -34,7 +33,7 @@ class AnomalyDetectionAnalysisController extends Controller
             // $res = null;
             return new SuccessResponseResource(
                 message: 'Soil analysis created successfully',
-                data: $res
+                data: AnomalyAnalysisSingleFileResponse::from($res)
             );
         });
     }
