@@ -35,7 +35,7 @@ class AnomalyDetectionAnalysisController extends Controller
             // $res = null;
             return new SuccessResponseResource(
                 message: 'Soil analysis created successfully',
-                data: AnomalyAnalysisSingleFileResponse::from($res)
+                data: AnomalyAnalysisMultiFilesResponse::from($res)
             );
         });
     }
@@ -57,7 +57,7 @@ class AnomalyDetectionAnalysisController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(AnomalyDetectionAnalysis $anomalyDetectionAnalysis)
+    public function show($id)
     {
         //
     }
@@ -66,7 +66,7 @@ class AnomalyDetectionAnalysisController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AnomalyDetectionAnalysis $anomalyDetectionAnalysis)
+    public function destroy($id)
     {
         //
     }
