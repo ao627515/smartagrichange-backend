@@ -35,4 +35,9 @@ class AnomalyAnalysisService extends BaseService
 
         return $record->refresh()->load('analysis');
     }
+
+    public function createwithMultiImgs(array $data)
+    {
+        return [];
+    }
 }

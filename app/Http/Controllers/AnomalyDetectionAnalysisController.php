@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\AnomalyDetectionAnalysis;
 use App\Services\AnomalyAnalysisService;
 use App\DTO\Req\AnomalyAnalysisImageRequest;
+use App\DTO\Req\AnomalyAnalysisImagesRequest;
 use App\Http\Resources\SuccessResponseResource;
 use App\DTO\Responses\AnomalyAnalysisSingleFileResponse;
 
@@ -34,6 +35,20 @@ class AnomalyDetectionAnalysisController extends Controller
             return new SuccessResponseResource(
                 message: 'Soil analysis created successfully',
                 data: AnomalyAnalysisSingleFileResponse::from($res)
+            );
+        });
+    }
+
+    public function createwithMultiImgs(Request $request){
+
+        return $this->handleRequestException(function () use ($request) {
+            $data = AnomalyAnalysisImagesRequest::validateAndCreate($request->all())->toArray();
+            $res = $this->anomalyAnalysisService->createwithMultiImgs($data);
+            // $res = null;
+            return new SuccessResponseResource(
+                message: 'Soil analysis created successfully',
+                // data: AnomalyAnalysisSingleFileResponse::from($res)
+                data: $res
             );
         });
     }
