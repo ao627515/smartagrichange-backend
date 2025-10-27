@@ -19,7 +19,10 @@ class SoilAnalysisService extends BaseService
      */
     protected $repository;
 
-    public function __construct(SoilAnalysisRepository $repository)
+    public function __construct(
+        SoilAnalysisRepository $repository,
+        private UserService $userService
+        )
     {
         parent::__construct($repository);
 
@@ -61,6 +64,7 @@ class SoilAnalysisService extends BaseService
 
     public function userAnalysesLatest($userId, $columns = ['*'])
     {
+        $this->userService->findOrFail($userId);
         return $this->repository->userAnalysesLatest($userId, $columns);
     }
 }

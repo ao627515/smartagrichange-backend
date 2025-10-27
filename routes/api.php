@@ -68,4 +68,5 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('anomaly-analyses', AnomalyDetectionAnalysisController::class)->except(['update', 'store']);
     Route::post('anomaly-analyses/img', [AnomalyDetectionAnalysisController::class, 'createwithSingleImg']);
     Route::post('anomaly-analyses/imgs', [AnomalyDetectionAnalysisController::class, 'createwithMultiImgs']);
+    Route::get('users/{user}/anomaly-analyses', [AnomalyDetectionAnalysisController::class, 'userAnalyses']);
 });

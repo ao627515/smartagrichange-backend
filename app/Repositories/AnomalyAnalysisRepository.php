@@ -24,4 +24,11 @@ class AnomalyAnalysisRepository extends BaseRepository
         $model->analysis()->create($data);
         return $model;
     }
+
+    public function userAnalysesLatest($userId, $columns = ['*'])
+    {
+        return $this->model->whereHas('analysis', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->latest()->get($columns);
+    }
 }

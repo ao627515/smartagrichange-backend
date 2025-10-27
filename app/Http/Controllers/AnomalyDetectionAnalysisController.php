@@ -63,6 +63,20 @@ class AnomalyDetectionAnalysisController extends Controller
         });
     }
 
+    public function userAnalyses($user)
+    {
+        return $this->handleRequestException(function () use ($user) {
+            $res = $this->anomalyAnalysisService->userAnalysesLatest($user);
+            return new SuccessResponseResource(
+                message: 'Soil analyses retrieved successfully',
+                data: array_map(
+                    fn($item) => AnomalyAnalysisMultiFilesResponse::fromModel($item),
+                    $res->all()
+                )
+            );
+        });
+    }
+
     /**
      * Display the specified resource.
      */
