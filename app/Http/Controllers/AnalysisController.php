@@ -32,11 +32,10 @@ class AnalysisController extends Controller
         });
     }
 
-    public function userAnalyses(Request $request)
+    public function userAnalyses($userId)
     {
-        return $this->handleRequestException(function () use ($request) {
-            $user = $request->user();
-            $analyses = $this->analysisService->getByUserWithRelations($user->id, ['analyzable']);
+        return $this->handleRequestException(function () use ($userId) {
+            $analyses = $this->analysisService->getByUserWithRelations($userId, ['analyzable']);
             return new SuccessResponseResource(
                 'User analyses retrieved successfully.',
                 AnalysisCollection::make(AnalysisResponse::collect($analyses))

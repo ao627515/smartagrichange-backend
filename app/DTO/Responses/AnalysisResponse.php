@@ -8,6 +8,7 @@ use Dflydev\DotAccessData\Data;
 use App\DTO\Responses\SoilAnalysisResponse;
 use Spatie\LaravelData\Data as LaravelDataData;
 use App\DTO\Responses\SoilAnalysisSummaryResponse;
+use App\DTO\Responses\AnomalyAnalysisMultiFilesSummaryResponse;
 
 class AnalysisResponse extends LaravelDataData
 {
@@ -18,7 +19,7 @@ class AnalysisResponse extends LaravelDataData
         public int $analyzable_id,
         public int $user_id,
         public string $created_at,
-        public ?SoilAnalysisSummaryResponse $analyzable,
+        public SoilAnalysisSummaryResponse|AnomalyAnalysisMultiFilesSummaryResponse $analyzable,
         public ?int $parcel_id = null
     ) {
         $this->type = $this->analyzable_type == SoilAnalysis::class ? 'soil_analysis' : 'anomaly_detection_analysis';
@@ -26,6 +27,7 @@ class AnalysisResponse extends LaravelDataData
 
     public static function fromModel(Analysis $model)
     {
+        $model->load('analyzable');
         return new self(
             id: $model->id,
             analyzable_type: $model->analyzable_type,
@@ -33,9 +35,9 @@ class AnalysisResponse extends LaravelDataData
             user_id: $model->user_id,
             parcel_id: $model->parcel_id,
             created_at: $model->created_at?->toDateTimeString(),
-            analyzable: $model->analyzable ? (get_class($model->analyzable) == SoilAnalysis::class
+            analyzable: (get_class($model->analyzable) == SoilAnalysis::class
                 ? SoilAnalysisSummaryResponse::from($model->analyzable)
-                : null) : null,
+                : AnomalyAnalysisMultiFilesSummaryResponse::from($model->analyzable)),
         );
     }
 

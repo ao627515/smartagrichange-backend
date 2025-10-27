@@ -54,6 +54,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('users/{user}/soil-analyses', [SoilAnalysisController::class, 'userAnalyses']);
     Route::post('users/{user}/change-password', [NewPasswordController::class, 'changeUserPassword']);
     Route::apiResource('analyses', AnalysisController::class)->except('update');
+    Route::get('users/{user}/analyses', [AnalysisController::class, 'userAnalyses']);
     Route::apiResource('media', MediaController::class);
     Route::apiResource('plants', PlantController::class);
     Route::get('plants/{plant}/anomalies', [PlantController::class, 'anomalies']);

@@ -17,14 +17,17 @@ class AnalysisService extends BaseService
      * Summary of __construct
      * @param AnalysisRepository $repository
      */
-    public function __construct(AnalysisRepository $repository)
-    {
+    public function __construct(
+        AnalysisRepository $repository,
+        private UserService $userService
+    ) {
         parent::__construct($repository);
         $this->repository = $repository;
     }
 
     public function getByUserWithRelations(int $userId, array $relations = [], $columns = ['*'])
     {
+        $this->userService->findOrFail($userId);
         return $this->repository->getByUserLatestWithRelations($userId, $relations, $columns);
     }
 
