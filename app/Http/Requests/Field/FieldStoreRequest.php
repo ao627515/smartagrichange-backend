@@ -27,7 +27,7 @@ class FieldStoreRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
-            'area' => 'required|numeric|min:0',
+            'aera' => 'required|numeric|min:0',
         ];
     }
 }

@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('anomaly_detection_analyses', function (Blueprint $table) {
             $table->id();
-            $table->text('anomalies_detected');
-            $table->boolean('has_anomalies');
+            $table->json('model_result')->nullable();
             $table->timestamps();
         });
     }

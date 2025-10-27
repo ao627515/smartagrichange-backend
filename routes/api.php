@@ -1,20 +1,21 @@
 <?php
 
+use App\Models\Role;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\PlantController;
 use App\Http\Controllers\ParcelController;
+use App\Http\Controllers\AnomalyController;
 use App\Http\Controllers\UserOtpController;
 use App\Http\Controllers\AnalysisController;
-use App\Http\Controllers\AnomalyController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\NewPasswordController;
 use App\Http\Resources\SuccessResponseResource;
 use App\Http\Controllers\SoilAnalysisController;
 use App\Http\Controllers\FarmerProfileController;
-use App\Http\Controllers\PlantController;
-use App\Models\Role;
+use App\Http\Controllers\AnomalyDetectionAnalysisController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -63,4 +64,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('plants/{plant}/upload-images', [PlantController::class, 'uploadImages']);
     Route::post('plants-anomalies/{anomaly}/upload-image', [AnomalyController::class, 'uploadImage']);
     Route::post('plants-anomalies/{anomaly}/upload-images', [AnomalyController::class, 'uploadImages']);
+    Route::apiResource('anomaly-analyses', AnomalyDetectionAnalysisController::class)->except(['update', 'store']);
+    Route::post('anomaly-analyses/img', [AnomalyDetectionAnalysisController::class, 'createwithSingleImg']);
+    Route::post('anomaly-analyses/imgs', [AnomalyDetectionAnalysisController::class, 'createwithMultiImgs']);
 });

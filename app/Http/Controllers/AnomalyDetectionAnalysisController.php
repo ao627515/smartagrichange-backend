@@ -2,11 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AnomalyDetectionAnalysis;
 use Illuminate\Http\Request;
+use App\Models\AnomalyDetectionAnalysis;
+use App\Services\AnomalyAnalysisService;
+use App\DTO\Req\AnomalyAnalysisImageRequest;
+use App\Http\Resources\SuccessResponseResource;
 
 class AnomalyDetectionAnalysisController extends Controller
 {
+    public function __construct(
+        public AnomalyAnalysisService $anomalyAnalysisService
+    ){
+
+    }
     /**
      * Display a listing of the resource.
      */
@@ -18,9 +26,17 @@ class AnomalyDetectionAnalysisController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function createwithSingleImg(Request $request)
     {
-        //
+        return $this->handleRequestException(function () use ($request) {
+            $data = AnomalyAnalysisImageRequest::validateAndCreate($request->all())->toArray();
+            // $res = $this->anomalyAnalysisService->createwithSingleImg($data);
+            $res = null;
+            return new SuccessResponseResource(
+                message: 'Soil analysis created successfully',
+                data: $res
+            );
+        });
     }
 
     /**
