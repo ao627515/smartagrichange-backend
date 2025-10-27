@@ -33,6 +33,6 @@ class AnomalyAnalysisService extends BaseService
 
         // event(new AnomalyAnalysisCreated($record->id, ['img' => $data['image']]));
 
-        return $record->fresh();
+        return $record->refresh()->load('analysis');
     }
 }

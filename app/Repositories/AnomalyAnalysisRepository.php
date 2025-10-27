@@ -22,6 +22,6 @@ class AnomalyAnalysisRepository extends BaseRepository
     {
         $model = $this->model->create($data);
         $model->analysis()->create($data);
-        return $model->refresh()->load('analysis');
+        return $model;
     }
 }
