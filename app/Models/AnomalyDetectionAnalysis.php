@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -20,4 +21,9 @@ class AnomalyDetectionAnalysis extends Model implements HasMedia
     {
         return $this->morphOne(Analysis::class, 'analyzable');
     }
+
+    // public function modelResult(): Attribute
+    // {
+    //     return Attribute::get(fn($value) => json_decode($value));
+    // }
 }
