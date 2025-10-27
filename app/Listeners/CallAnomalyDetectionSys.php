@@ -27,21 +27,17 @@ class CallAnomalyDetectionSys
      */
     public function handle(AnomalyAnalysisCreated $event): void
     {
-        $this->anomalyAnalysisService->findOrFail($event->anomalyAnalysisId);
+        $anomalyAnalysis =  $this->anomalyAnalysisService->findOrFail($event->anomalyAnalysisId);
+
 
         $data = $event->params;
-        if (isset($data['img']) && $data['img'] instanceof UploadedFile){
+        if (isset($data['img']) && $data['img'] instanceof UploadedFile) {
+            // $img_path = $media->getUrl();
+            // $img_path = "{$media->conversions_disk}/{$media->name}";
             $req = ['image' => $data['img']];
-            
-
+            $res = $this->anomalyDetectionSysService->predictWithFile($req);
+            $this->anomalyAnalysisService->update($anomalyAnalysis->id, ['model_result' => $res->toJson()]);
+            $anomalyAnalysis->addMedia($data['img'])->toMediaCollection('anomaly_analysis');
         }
-
-        if (isset($data['imgs']))
-            $req =  Validator::make($data, [
-                'imgs' => ['array'],
-                'imgs.*' => ['image']
-            ])->validated();
-
-        // $res =
     }
 }
