@@ -20,10 +20,10 @@ class CropsRecommandationSysService
             'Accept' => 'application/json',
         ])
             ->throw()
-            ->post($this->apiEndpoint . '/predict/probabilities', $data);
+            ->post($this->apiEndpoint . '/predict/top', $data);
 
         if ($response->successful()) {
-            return $response->json()['probabilities'] ?? [];
+            return $response->json() ?? [];
         }
 
         return [];
