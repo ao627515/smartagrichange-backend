@@ -28,6 +28,8 @@ class FieldUpdateRequest extends FormRequest
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
             'aera' => 'required|numeric|min:0',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ];
     }
 }
