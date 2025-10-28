@@ -19,9 +19,10 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $this->call([
-            // CountryCallingCodeSeeder::class,
-            // RoleSeeder::class,
-            PlantSeeder::class
+            CountryCallingCodeSeeder::class,
+            RoleSeeder::class,
+            PlantSeeder::class,
+            AnomalySeeder::class
         ]);
     }
 }
