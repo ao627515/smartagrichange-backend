@@ -17,55 +17,53 @@ use Illuminate\Support\Str;
 class CallAnomalyDetectionSys
 {
     /**
-     * Create the event listener.
+     * Constructeur avec injection des services nécessaires.
      */
     public function __construct(
         public AnomalyAnalysisService $anomalyAnalysisService,
         public AnomalyDetectionSysService $anomalyDetectionSysService,
         public PlantService $plantService,
         public PlantAnomalyService $plantAnomalyService
-    ) {
-        //
-    }
+    ) {}
 
     /**
-     * Handle the event.
+     * Handle l'événement de création d'une analyse d'anomalie.
      */
     public function handle(AnomalyAnalysisCreated $event): void
     {
-        $anomalyAnalysis =  $this->anomalyAnalysisService->findOrFail($event->anomalyAnalysisId);
-
-
+        // Récupération de l'analyse via son ID
+        $anomalyAnalysis = $this->anomalyAnalysisService->findOrFail($event->anomalyAnalysisId);
         $data = $event->params;
+
+        // --- Traitement d'une image unique ---
         if (isset($data['img']) && $data['img'] instanceof UploadedFile) {
-            // $img_path = $media->getUrl();
-            // $img_path = "{$media->conversions_disk}/{$media->name}";
-            $req = ['image' => $data['img']];
-            $res = $this->anomalyDetectionSysService->predictWithFile($req);
+            $res = $this->anomalyDetectionSysService->predictWithFile(['image' => $data['img']]);
             $this->anomalyAnalysisService->update($anomalyAnalysis->id, ['model_result' => $res->toJson()]);
             $anomalyAnalysis->addMedia($data['img'])->toMediaCollection('anomaly_analysis');
         }
 
+        // --- Traitement de plusieurs images ---
         if (isset($data['imgs']) && is_array($data['imgs'])) {
-            $req = ['images' => $data['imgs']];
-            // appler l'api pour la prediction un tab avec la liste des proba
-            $res = $this->anomalyDetectionSysService->predictMultipleFiles($req);
-            // save les donnees envoyer par l'ia
+            $res = $this->anomalyDetectionSysService->predictMultipleFiles(['images' => $data['imgs']]);
             $this->anomalyAnalysisService->update($anomalyAnalysis->id, ['model_result' => $res->toJson()]);
 
-            // save les image utilise pour la prediction
             foreach ($data['imgs'] as $file) {
                 $anomalyAnalysis->addMedia($file)->toMediaCollection('anomaly_analysis');
             }
         }
-        // identifier la plante et l'anommalie
-        // la revoyer par le model est au format {plant}___{anomaly}
-        $tmp = explode('___', $res->class_name);
-        $plantName = Str::of($tmp[0])->lower()->toString();
-        $anomalyName = Str::of($tmp[1])->replace('_', ' ')->lower()->toString();
+
+        // --- Identifier la plante et l'anomalie depuis la classe renvoyée par le modèle ---
+        [$plantNameRaw, $anomalyNameRaw] = explode('___', $res->class_name);
+        $plantName = Str::of($plantNameRaw)->lower()->toString();
+        $anomalyName = Str::of($anomalyNameRaw)->replace('_', ' ')->lower()->toString();
 
         $plant = $this->plantService->findOrFailByCommonName(__($plantName), ['id']);
         $anomaly = $this->plantAnomalyService->findOrFailByNameAndPlant($plant->id, __($anomalyName), ['id']);
-        $this->anomalyAnalysisService->update($anomalyAnalysis->id, ['plant_id' => $plant->id, 'anomaly_id' => $anomaly->id]);
+
+        // --- Mise à jour des IDs de la plante et de l'anomalie dans l'analyse ---
+        $this->anomalyAnalysisService->update($anomalyAnalysis->id, [
+            'plant_id' => $plant->id,
+            'anomaly_id' => $anomaly->id
+        ]);
     }
 }
