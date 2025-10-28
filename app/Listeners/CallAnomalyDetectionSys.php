@@ -62,7 +62,6 @@ class CallAnomalyDetectionSys
         $anomalyId = null;
 
         if ($anomalyName != "healthy") {
-            throw new Exception("anomalyName : {$anomalyName}");
             $anomaly = $this->plantAnomalyService->findOrFailByNameAndPlant($plant->id, __($anomalyName), ['id']);
             $anomalyId = $anomaly->id;
         }
