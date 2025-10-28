@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('anomaly_detection_analyses', function (Blueprint $table) {
             $table->id();
             $table->json('model_result')->nullable();
+            $table->foreignId('plant_id')->nullable()->constrained('plants');
+            $table->foreignId('anomaly_id')->nullable()->constrained('anomalies');
             $table->timestamps();
         });
     }

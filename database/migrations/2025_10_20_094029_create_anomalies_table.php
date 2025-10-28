@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('anomalies', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
+            $table->text('description');
             $table->text('symptoms');
             $table->text('solutions');
             $table->text('preventions');
