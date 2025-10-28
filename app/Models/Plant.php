@@ -8,6 +8,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use PhpParser\Node\Expr\FuncCall;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Plant extends Model implements HasMedia
@@ -32,7 +33,7 @@ class Plant extends Model implements HasMedia
     {
         $this
             ->addMediaCollection('plant_images')
-            ->useDisk(config('media-library.disk_name')); 
+            ->useDisk(config('media-library.disk_name'));
     }
 
     public function registerMediaConversions(?Media $media = null): void
@@ -42,5 +43,10 @@ class Plant extends Model implements HasMedia
             ->width(300)
             ->height(200)
             ->nonQueued(); // ou queued
+    }
+
+    public function medias()
+    {
+        return $this->morphMany(Media::class, 'model');
     }
 }

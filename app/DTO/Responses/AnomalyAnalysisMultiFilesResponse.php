@@ -29,7 +29,7 @@ class AnomalyAnalysisMultiFilesResponse extends Data
 
     public static function fromModel(AnomalyDetectionAnalysis $model)
     {
-        $model->load(['analysis', 'plant.rubrics.infos', 'anomaly']);
+        $model->load(['analysis', 'plant.rubrics.infos', 'plant.medias', 'anomaly']);
         $m = new self(
             $model->id,
             ClassifierPrediction::from($model->model_result),
