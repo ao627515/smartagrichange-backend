@@ -14,6 +14,7 @@ class AnomalySeeder extends Seeder
     public function run(): void
     {
         $anomaliesData = [
+            // Anomalies pour Tomate (plant_id = 1)
             [
                 "name" => "Mildiou tardif",
                 "description" => "Le mildiou tardif est une maladie fongique très destructrice causée par Phytophthora infestans. Elle touche principalement les pommes de terre et les tomates, et peut entraîner la perte totale des cultures si elle n'est pas maîtrisée.",
@@ -58,7 +59,7 @@ class AnomalySeeder extends Seeder
                 "name" => "Virus des feuilles jaunes en cuillère",
                 "description" => "Le virus des feuilles jaunes en cuillère de la tomate (TYLCV - Tomato Yellow Leaf Curl Virus) est une maladie virale grave qui affecte principalement les plants de tomates, mais aussi d'autres solanacées. Il est transmis par la mouche blanche (Bemisia tabaci).",
                 "symptoms" => "Feuilles jaunes avec un aspect enroulé vers le haut (en cuillère)\nRalentissement de la croissance des plants\nRéduction de la floraison et de la fructification\nPlantes rabougries et déformées",
-                "solutions" => "Arracher et détruire les plants malades\nÉliminer les mouches blanches avec des insecticides biologiques\nInstaller des pièges collants jaunes\nIntroduire des prédateurs naturaux comme Encarsia formosa",
+                "solutions" => "Arracher et détruire les plants malades\nÉliminer les mouches blanches avec des insecticides biologiques\nInstaller des pièges collants jaunes\nIntroduire des prédateurs naturels comme Encarsia formosa",
                 "preventions" => "Utiliser des variétés résistantes au TYLCV\nInstaller des filets anti-insectes\nÉviter de planter à proximité de cultures infectées\nAssurer une bonne ventilation en serre",
                 "causes" => "TYLCV (Tomato Yellow Leaf Curl Virus) transmis par Bemisia tabaci",
                 "category" => "Maladie virale",
@@ -103,11 +104,51 @@ class AnomalySeeder extends Seeder
                 "causes" => "Septoria lycopersici",
                 "category" => "Maladie fongique",
                 "plant_id" => 1
-            ]
+            ],
+
+            // Anomalie pour Poivron (plant_id = 2)
+            [
+                "name" => "Tache bactérienne",
+                "description" => "La tache bactérienne du poivron est une maladie causée par des bactéries du genre Xanthomonas. Elle provoque des lésions sur les feuilles, les tiges et les fruits, réduisant considérablement la qualité et le rendement des cultures.",
+                "symptoms" => "Petites taches sombres sur les feuilles qui s'élargissent avec le temps\nLésions en creux sur les fruits avec halo jaune\nDécoloration et nécrose des tissus\nChute prématurée des feuilles et des fruits\nLésions liégeuses sur les fruits mûrs",
+                "solutions" => "Élimination immédiate des plants infectés\nTraitement avec des produits à base de cuivre\nUtilisation de variétés résistantes\nDésinfection rigoureuse des outils de taille\nRéduction de l'humidité dans les serres",
+                "preventions" => "Éviter l'arrosage par aspersion pour limiter la propagation\nAssurer une excellente circulation de l'air entre les plants\nUtiliser des semences certifiées saines et traitées\nRotation des cultures avec des espèces non sensibles\nÉviter de travailler sur des plants mouillés",
+                "causes" => "Xanthomonas campestris pv. vesicatoria",
+                "category" => "Maladie bactérienne",
+                "plant_id" => 2
+            ],
+
+            // Anomalies pour Pomme de terre (plant_id = 3)
+            [
+                "name" => "Mildiou tardif",
+                "description" => "Le mildiou tardif est une maladie fongique dévastatrice causée par Phytophthora infestans. Elle représente l'une des maladies les plus graves de la pomme de terre et peut détruire une culture entière en quelques jours dans des conditions favorables.",
+                "symptoms" => "Taches brun-gris sur les feuilles, souvent bordées de jaune\nFlétrissement rapide et noircissement du feuillage\nLésions sombres et humides sur les tiges\nPourriture brune des tubercules avec odeur désagréable\nDuvet blanchâtre visible sous les feuilles par temps humide",
+                "solutions" => "Application de fongicides préventifs dès l'apparition des conditions favorables\nÉlimination et destruction des plants infectés\nUtilisation de variétés résistantes ou tolérantes\nRécolte précoce si la maladie est détectée\nStockage uniquement des tubercules sains",
+                "preventions" => "Rotation des cultures sur 3 à 4 ans minimum\nÉlimination complète des résidus végétaux et tubercules volontaires\nUtilisation de semences certifiées saines\nApplication de fongicides préventifs en période à risque\nSurveillance météorologique (maladie favorisée par temps humide et frais)\nButtage adéquat pour protéger les tubercules",
+                "causes" => "Phytophthora infestans",
+                "category" => "Maladie fongique",
+                "plant_id" => 3
+            ],
+            [
+                "name" => "Brûlure alternarienne précoce",
+                "description" => "La brûlure alternarienne précoce est une maladie fongique importante de la pomme de terre causée par Alternaria solani. Bien que généralement moins destructrice que le mildiou tardif, elle peut causer des pertes significatives, surtout en conditions de stress.",
+                "symptoms" => "Taches brunes concentriques sur les feuilles, formant des anneaux caractéristiques (aspect de cible)\nJaunissement progressif et chute précoce des feuilles inférieures\nLésions sombres légèrement enfoncées sur les tiges\nTaches liégeuses brunes sur les tubercules\nRéduction de la surface foliaire et du rendement",
+                "solutions" => "Application de fongicides spécifiques à base de mancozèbe ou chlorothalonil\nÉlimination et destruction des feuilles infectées\nUtilisation de variétés moins sensibles\nAmélioration de la nutrition des plants (équilibre NPK)\nIrrigation adéquate pour réduire le stress hydrique",
+                "preventions" => "Rotation des cultures sur 2 à 3 ans avec des cultures non-hôtes\nÉlimination complète des résidus végétaux après récolte\nEspacement adéquat des plants pour favoriser l'aération\nArrosage à la base des plants pour éviter de mouiller le feuillage\nFertilisation équilibrée pour maintenir des plants vigoureux\nUtilisation de semences saines et traitées",
+                "causes" => "Alternaria solani",
+                "category" => "Maladie fongique",
+                "plant_id" => 3
+            ],
         ];
 
         foreach ($anomaliesData as $anomalyData) {
-            Anomaly::create($anomalyData);
+            Anomaly::updateOrCreate(
+                [
+                    'name' => $anomalyData['name'],
+                    'plant_id' => $anomalyData['plant_id']
+                ],
+                $anomalyData
+            );
         }
     }
 }
