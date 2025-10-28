@@ -22,11 +22,6 @@ class Anomaly extends Model implements HasMedia
         return $this->belongsTo(Plant::class);
     }
 
-    public function  anomaly()
-    {
-        return $this->belongsTo(Anomaly::class, 'anomaly_id', 'id');
-    }
-
     public function registerMediaCollections(): void
     {
         $this

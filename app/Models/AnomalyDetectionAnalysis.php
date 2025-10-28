@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\Plant;
+use App\Models\Anomaly;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AnomalyDetectionAnalysis extends Model implements HasMedia
@@ -26,4 +28,14 @@ class AnomalyDetectionAnalysis extends Model implements HasMedia
     // {
     //     return Attribute::get(fn($value) => json_decode($value));
     // }
+
+    public function plant()
+    {
+        return $this->belongsTo(Plant::class);
+    }
+
+    public function  anomaly()
+    {
+        return $this->belongsTo(Anomaly::class, 'anomaly_id', 'id');
+    }
 }
