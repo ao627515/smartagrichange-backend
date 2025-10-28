@@ -54,8 +54,8 @@ class CallAnomalyDetectionSys
 
         // --- Identifier la plante et l'anomalie depuis la classe renvoyée par le modèle ---
         [$plantNameRaw, $anomalyNameRaw] = explode('___', $res->class_name);
-        $plantName = Str::of($plantNameRaw)->lower()->toString();
-        $anomalyName = Str::of($anomalyNameRaw)->replace('_', ' ')->lower()->toString();
+        $plantName = Str::of($plantNameRaw)->replace('_', ' ')->lower()->toString();
+        $anomalyName = Str::of($anomalyNameRaw)->replace('__', ' ')->replace('_', ' ')->lower()->toString();
         $plant = $this->plantService->findOrFailByCommonName(__($plantName), ['id']);
 
         $anomalyId = null;
