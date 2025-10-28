@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Events\PlantCreated;
 use App\Events\PlantUpdated;
 use App\Repositories\PlantRepository;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -99,5 +101,15 @@ class PlantService extends BaseService
     {
         $plant = $this->findOrFail($plantId);
         return $this->mediaService->uploadFiles($plant, 'plant_images', $uploadedFiles);
+    }
+
+    public function findOrFailByCommonName(string $name, array $columns = ['*'])
+    {
+        $plant = $this->repository->findByCaseInsensitive('common_name', $name, $columns);
+        if (!$plant) {
+            throw new ModelNotFoundException("Plant with common name {$name} not found");
+        }
+
+        return $plant;
     }
 }

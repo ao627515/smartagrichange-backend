@@ -86,6 +86,14 @@ abstract class BaseRepository
         return $this->model->where($field, $value)->first($columns);
     }
 
+    public function findByCaseInsensitive($field, $value, $columns = ['*'])
+    {
+        return $this->model
+            ->whereRaw("LOWER($field) = ?", [strtolower($value)])
+            ->first($columns);
+    }
+
+
     public function findByMany($field, $values, $columns = ['*'])
     {
         return $this->model->whereIn($field, $values)->get($columns);

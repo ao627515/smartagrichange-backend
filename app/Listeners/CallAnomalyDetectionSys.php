@@ -3,12 +3,16 @@
 namespace App\Listeners;
 
 use App\Events\AnomalyAnalysisCreated;
+use App\Models\Plant;
 use App\Services\AnomalyAnalysisService;
 use App\Services\AnomalyDetectionSysService;
+use App\Services\PlantAnomalyService;
+use App\Services\PlantService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class CallAnomalyDetectionSys
 {
@@ -17,7 +21,9 @@ class CallAnomalyDetectionSys
      */
     public function __construct(
         public AnomalyAnalysisService $anomalyAnalysisService,
-        public AnomalyDetectionSysService $anomalyDetectionSysService
+        public AnomalyDetectionSysService $anomalyDetectionSysService,
+        public PlantService $plantService,
+        public PlantAnomalyService $plantAnomalyService
     ) {
         //
     }
@@ -42,11 +48,23 @@ class CallAnomalyDetectionSys
 
         if (isset($data['imgs']) && is_array($data['imgs'])) {
             $req = ['images' => $data['imgs']];
+            // appler l'api pour la prediction un tab avec la liste des proba
             $res = $this->anomalyDetectionSysService->predictMultipleFiles($req);
+            // save les donnees envoyer par l'ia
             $this->anomalyAnalysisService->update($anomalyAnalysis->id, ['model_result' => $res->toJson()]);
+
+            // save les image utilise pour la prediction
             foreach ($data['imgs'] as $file) {
                 $anomalyAnalysis->addMedia($file)->toMediaCollection('anomaly_analysis');
             }
+
+            // identifier la plante et l'anommalie
+            // la revoyer par le model est au format {plant}___{anomaly}
+            $tmp = explode('___', $res->class_name);
+            $plantName = Str::of($tmp[0])->lower()->toString();
+            $anomalyName = Str::of($tmp[1])->replace('_', ' ')->lower()->toString();
+
+            $plant = $this->plantService->findOrFailByCommonName(__($plantName), ['id']);
         }
     }
 }
