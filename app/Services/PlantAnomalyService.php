@@ -50,12 +50,12 @@ class PlantAnomalyService extends BaseService
         return $this->mediaService->uploadFiles($anomaly, 'anomaly_images', $uploadedFiles);
     }
 
-    public function findOrFailByName(string $name, array $columns = ['*'])
+    public function findOrFailByNameAndPlant(int $plantId, string $name, array $columns = ['*'])
     {
-        $anomaly = $this->repository->findByCaseInsensitive('name', $name, $columns);
+        $anomaly = $this->repository->findOrFailByNameAndPlant($plantId, $name, $columns);
 
         if (!$anomaly) {
-            throw new ModelNotFoundException("Plant with name {$name} not found");
+            throw new ModelNotFoundException("Plant with name {$name} and plant_id {$plantId} not found");
         }
 
         return $anomaly;
