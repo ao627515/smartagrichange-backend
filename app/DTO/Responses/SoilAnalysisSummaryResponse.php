@@ -14,7 +14,7 @@ class SoilAnalysisSummaryResponse extends Data
         public SensorData $sensor_data,
         public array $crops_recommanded,
         public ?string $description = null,
-        public string $sensor_model,
+        public ?string $sensor_model = null,
     ) {}
 
     public static function fromModel(SoilAnalysis $model)

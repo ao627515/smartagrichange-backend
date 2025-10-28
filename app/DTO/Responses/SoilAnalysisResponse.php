@@ -15,7 +15,7 @@ class SoilAnalysisResponse extends Data
      * @param SensorData $sensor_data
      * @param array<int, CropRecommandedData> $crops_recommanded
      * @param string $description
-     * @param string $sensor_model
+     * @param ?string $sensor_model
      * @param int $user_id
      * @param ?int $parcel_id
      */
@@ -24,7 +24,7 @@ class SoilAnalysisResponse extends Data
         public SensorData $sensor_data,
         public array $crops_recommanded,
         public ?string $description = null,
-        public string $sensor_model,
+        public ?string $sensor_model = null,
         public int $user_id,
         public ?int $parcel_id = null,
 
