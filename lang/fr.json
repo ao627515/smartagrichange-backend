@@ -1,12 +1,12 @@
 {
     "tomato": "tomate",
-    "Tomato___Late_blight": "Mildiou tardif",
-    "Tomato___Bacterial_spot": "Tache bactérienne",
-    "Tomato___Early_blight": "Brûlure alternarienne précoce",
-    "Tomato___Spider_mites_Two_spotted_spider_mite": "Tétranyque à deux points",
-    "Tomato__Tomato_YellowLeaf_Curl_Virus": "Virus des feuilles jaunes en cuillère",
-    "Tomato___Leaf_Mold": "Moisissure des feuilles",
-    "Tomato___Tomato_mosaic_virus": "Virus de la mosaïque de la tomate",
-    "Tomato___Target_Spot": "Tache cible",
-    "Tomato___Septoria_leaf_spot": "Tache septorienne"
+    "late blight": "Mildiou tardif",
+    "bacterial spot": "Tache bactérienne",
+    "early blight": "Brûlure alternarienne précoce",
+    "spider mites Two spotted spider mite": "Tétranyque à deux points",
+    "tomato  Tomato YellowLeaf Curl Virus": "Virus des feuilles jaunes en cuillère",
+    "leaf Mold": "Moisissure des feuilles",
+    "tomato mosaic virus": "Virus de la mosaïque de la tomate",
+    "target Spot": "Tache cible",
+    "septoria leaf spot": "Tache septorienne"
 }
