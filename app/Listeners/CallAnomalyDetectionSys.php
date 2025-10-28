@@ -56,14 +56,19 @@ class CallAnomalyDetectionSys
         [$plantNameRaw, $anomalyNameRaw] = explode('___', $res->class_name);
         $plantName = Str::of($plantNameRaw)->lower()->toString();
         $anomalyName = Str::of($anomalyNameRaw)->replace('_', ' ')->lower()->toString();
-
         $plant = $this->plantService->findOrFailByCommonName(__($plantName), ['id']);
-        $anomaly = $this->plantAnomalyService->findOrFailByNameAndPlant($plant->id, __($anomalyName), ['id']);
 
-        // --- Mise à jour des IDs de la plante et de l'anomalie dans l'analyse ---
+        $anomalyId = null;
+
+        if ($anomalyName !== 'healthy') {
+            $anomaly = $this->plantAnomalyService->findOrFailByNameAndPlant($plant->id, __($anomalyName), ['id']);
+            $anomalyId = $anomaly->id;
+        }
+
+        // Mise à jour
         $this->anomalyAnalysisService->update($anomalyAnalysis->id, [
             'plant_id' => $plant->id,
-            'anomaly_id' => $anomaly->id
+            'anomaly_id' => $anomalyId
         ]);
     }
 }

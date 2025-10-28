@@ -17,7 +17,7 @@ class AnomalyAnalysisMultiFilesResponse extends Data
      */
     public array $images;
     public PlantResponseDto $plant;
-    public PlantAnomalyResponse $anomaly;
+    public ?PlantAnomalyResponse $anomaly = null;
 
     public function __construct(
         public int $id,
@@ -42,7 +42,9 @@ class AnomalyAnalysisMultiFilesResponse extends Data
 
         $m->plant = PlantResponseDto::fromModel($model->plant);
 
-        $m->anomaly = PlantAnomalyResponse::fromModel($model->anomaly);
+        if ($model->amomaly !== null) {
+            $m->anomaly = PlantAnomalyResponse::fromModel($model->anomaly);
+        }
 
         return $m;
     }
