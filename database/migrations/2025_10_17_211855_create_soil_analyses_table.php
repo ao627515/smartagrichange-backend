@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('soil_analyses', function (Blueprint $table) {
             $table->id();
             $table->text('sensor_data')->nullable();
-            $table->text('crops_recommanded')->nullable();
+            $table->json('crops_recommanded')->nullable();
             $table->text('description')->nullable();
             $table->string('sensor_model')->nullable();
             $table->timestamps();
