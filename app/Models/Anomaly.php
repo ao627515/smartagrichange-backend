@@ -37,4 +37,9 @@ class Anomaly extends Model implements HasMedia
             ->height(150)
             ->nonQueued();
     }
+
+    public function medias()
+    {
+        return $this->morphMany(Media::class, 'model');
+    }
 }

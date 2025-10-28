@@ -16,8 +16,8 @@ class AnomalyAnalysisMultiFilesResponse extends Data
      * @var string[] $images
      */
     public array $images;
-    public Plant $plant;
-    public Anomaly $anomaly;
+    public PlantResponseDto $plant;
+    public PlantAnomalyResponse $anomaly;
 
     public function __construct(
         public int $id,
@@ -29,7 +29,7 @@ class AnomalyAnalysisMultiFilesResponse extends Data
 
     public static function fromModel(AnomalyDetectionAnalysis $model)
     {
-        $model->load(['analysis', 'plant.rubrics.infos', 'plant.medias', 'anomaly']);
+        $model->load(['analysis', 'plant.rubrics.infos', 'anomaly']);
         $m = new self(
             $model->id,
             ClassifierPrediction::from($model->model_result),
@@ -40,8 +40,9 @@ class AnomalyAnalysisMultiFilesResponse extends Data
 
         $m->images = $model->getMedia('anomaly_analysis')->map(fn($media) => $media->getFullUrl())->toArray();
 
-        $m->plant = $model->plant;
-        $m->anomaly = $model->anomaly;
+        $m->plant = PlantResponseDto::fromModel($model->plant);
+
+        $m->anomaly = PlantAnomalyResponse::fromModel($model->anomaly);
 
         return $m;
     }
