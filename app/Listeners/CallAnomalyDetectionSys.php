@@ -8,6 +8,7 @@ use App\Services\AnomalyAnalysisService;
 use App\Services\AnomalyDetectionSysService;
 use App\Services\PlantAnomalyService;
 use App\Services\PlantService;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Queue\InteractsWithQueue;
@@ -61,6 +62,7 @@ class CallAnomalyDetectionSys
         $anomalyId = null;
 
         if ($anomalyName !== 'healthy') {
+            throw new Exception("anomalyName : {$anomalyName}");
             $anomaly = $this->plantAnomalyService->findOrFailByNameAndPlant($plant->id, __($anomalyName), ['id']);
             $anomalyId = $anomaly->id;
         }

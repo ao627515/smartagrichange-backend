@@ -55,7 +55,7 @@ class PlantAnomalyService extends BaseService
         $anomaly = $this->repository->findOrFailByNameAndPlant($plantId, $name, $columns);
 
         if (!$anomaly) {
-            throw new ModelNotFoundException("Anomaly aziz with name {$name} and plant_id {$plantId} not found");
+            throw new ModelNotFoundException("Anomaly with name {$name} and plant_id {$plantId} not found");
         }
 
         return $anomaly;
