@@ -57,16 +57,15 @@ class CallAnomalyDetectionSys
             foreach ($data['imgs'] as $file) {
                 $anomalyAnalysis->addMedia($file)->toMediaCollection('anomaly_analysis');
             }
-
-            // identifier la plante et l'anommalie
-            // la revoyer par le model est au format {plant}___{anomaly}
-            $tmp = explode('___', $res->class_name);
-            $plantName = Str::of($tmp[0])->lower()->toString();
-            $anomalyName = Str::of($tmp[1])->replace('_', ' ')->lower()->toString();
-
-            $plant = $this->plantService->findOrFailByCommonName(__($plantName), ['id']);
-            $anomaly = $this->plantAnomalyService->findOrFailByNameAndPlant($plant->id, __($anomalyName), ['id']);
-            $this->anomalyAnalysisService->update($anomalyAnalysis->id, ['plant_id' => $plant->id, 'anomaly_id' => $anomaly->id]);
         }
+        // identifier la plante et l'anommalie
+        // la revoyer par le model est au format {plant}___{anomaly}
+        $tmp = explode('___', $res->class_name);
+        $plantName = Str::of($tmp[0])->lower()->toString();
+        $anomalyName = Str::of($tmp[1])->replace('_', ' ')->lower()->toString();
+
+        $plant = $this->plantService->findOrFailByCommonName(__($plantName), ['id']);
+        $anomaly = $this->plantAnomalyService->findOrFailByNameAndPlant($plant->id, __($anomalyName), ['id']);
+        $this->anomalyAnalysisService->update($anomalyAnalysis->id, ['plant_id' => $plant->id, 'anomaly_id' => $anomaly->id]);
     }
 }
