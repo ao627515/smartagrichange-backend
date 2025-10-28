@@ -42,7 +42,7 @@ class AnomalyAnalysisMultiFilesResponse extends Data
 
         $m->plant = PlantResponseDto::fromModel($model->plant);
 
-        if ($model->amomaly !== null) {
+        if ($model->anomaly !== null) {
             $m->anomaly = PlantAnomalyResponse::fromModel($model->anomaly);
         }
 
