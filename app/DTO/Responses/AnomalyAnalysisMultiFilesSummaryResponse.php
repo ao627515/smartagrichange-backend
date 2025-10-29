@@ -2,9 +2,10 @@
 
 namespace App\DTO\Responses;
 
+use Spatie\LaravelData\Data;
 use App\DTO\Data\ClassifierPrediction;
 use App\Models\AnomalyDetectionAnalysis;
-use Spatie\LaravelData\Data;
+use App\DTO\Responses\PlantAnomalyResponse;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class AnomalyAnalysisMultiFilesSummaryResponse extends Data
