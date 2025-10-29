@@ -45,7 +45,7 @@ class SoilAnalysisService extends BaseService
             $sensorData = SensorData::from($data);
 
             // Convertit les valeurs NPK
-            $sensorData = SensorData::from(array_merge($sensorData->toArray(), $this->convertNPKToKgPerHa($sensorData)));
+            // $sensorData = SensorData::from(array_merge($sensorData->toArray(), $this->convertNPKToKgPerHa($sensorData)));
 
             // Prépare les données pour la création
             $data = array_merge($data, [
