@@ -27,7 +27,7 @@ class FieldStoreRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
-            'aera' => 'required|numeric|min:0',
+            'area' => 'required|numeric|min:0',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
         ];

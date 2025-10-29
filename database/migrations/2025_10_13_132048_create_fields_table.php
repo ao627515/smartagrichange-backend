@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('fields', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('location');
+            $table->string('location')->nullable();
             $table->float('longitude')->nullable();
             $table->float('latitude')->nullable();
-            $table->decimal('aera', 10, 2);
+            $table->decimal('area', 10, 2);
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
