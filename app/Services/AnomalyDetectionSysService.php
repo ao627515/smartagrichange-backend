@@ -13,9 +13,9 @@ use Illuminate\Support\Arr;
 class AnomalyDetectionSysService
 {
     private string $baserUrl;
-    // private string $uri = 'tomato-diseases';
+    private string $uri = 'tomato-diseases';
     private string $endpoint = '';
-    private string $uri = 'tpp-diseases';
+    // private string $uri = 'tpp-diseases';
 
     public function __construct()
     {
