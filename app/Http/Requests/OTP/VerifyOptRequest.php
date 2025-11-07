@@ -25,8 +25,12 @@ class VerifyOptRequest extends FormRequest
     public function rules(): array
     {
         $user = $this->route('user');
-        return [
-            'otp_code' => ['required', 'string', Rule::exists('user_otps', 'otp_code')]
-        ];
+        $rules = [];
+        if (!env('MODE_DEMO', false)) {
+            $rules = [
+                'otp_code' => ['required', 'string', Rule::exists('user_otps', 'otp_code')]
+            ];
+        }
+        return $rules;
     }
 }

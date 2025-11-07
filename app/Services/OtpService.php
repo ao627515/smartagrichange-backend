@@ -130,22 +130,25 @@ class OtpService
             return false;
         }
 
-        if ($userOtp->is_expired) {
-            throw new Exception('OTP has expired');
+        if (!env('MODE_DEMO', false)) {
+            if ($userOtp->is_expired) {
+                throw new Exception('OTP has expired');
+            }
+
+            if ($userOtp->attempts >= $this->maxAttempts) {
+                throw new Exception('Maximum OTP verification attempts exceeded');
+            }
+
+            if ($userOtp->otp_code !== $otp) {
+                $this->userOtpService->incrementAttempts($userOtp->id);
+                throw new Exception('Invalid OTP');
+            }
+
+            if ($userOtp->is_used) {
+                throw new Exception('OTP has already been used');
+            }
         }
 
-        if ($userOtp->attempts >= $this->maxAttempts) {
-            throw new Exception('Maximum OTP verification attempts exceeded');
-        }
-
-        if ($userOtp->otp_code !== $otp) {
-            $this->userOtpService->incrementAttempts($userOtp->id);
-            throw new Exception('Invalid OTP');
-        }
-
-        if ($userOtp->is_used) {
-            throw new Exception('OTP has already been used');
-        }
 
         $this->userOtpService->markAsUsed($userOtp->id);
         event(new OtpVerifed($userId));
